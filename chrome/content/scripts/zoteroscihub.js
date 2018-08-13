@@ -33,7 +33,7 @@ Zotero.Scihub.resetState = function() {
   Zotero.Scihub.current = -1;
   Zotero.Scihub.toUpdate = 0;
   Zotero.Scihub.itemsToUpdate = null;
-  Zotero.Scihub.numberOfUpdatesItems = 0;
+  Zotero.Scihub.numberOfUpdatedItems = 0;
 }
 
 Zotero.Scihub.updateSelectedEntity = function(libraryId) {
