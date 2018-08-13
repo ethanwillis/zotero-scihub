@@ -24,19 +24,19 @@
             oncommand="Zotero.Scihub.updateAll();"/>
     </menupopup>
 
-    <menupopup id="zotero-collectionmenu">
+    <popup id="zotero-collectionmenu">
         <menuitem
             id="zotero-collectionmenu-scihub"
-            label="&zotero.scihub.update.label;"
+            label="&zotero.scihub.updateAll.label;"
             oncommand="Zotero.Scihub.updateSelectedEntity()"/>
-    </menupopup>
+    </popup>
 
-    <menupopup
+    <popup
         id="zotero-itemmenu"
         onpopupshowing="ZoteroPane.buildItemContextMenu();">
         <menuitem
             id="zotero-itemmenu-scihub"
             label="&zotero.scihub.update.label;"
             oncommand="Zotero.Scihubs.updateSelectedItems()"/>
-    </menupopup>
+    </popup>
 </overlay>
