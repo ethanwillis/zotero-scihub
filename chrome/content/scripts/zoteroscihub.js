@@ -100,20 +100,24 @@ Zotero.Scihub.updateNextItem = function() {
 };
 
 Zotero.Scihub.generateItemUrl = function(item) {
-
+    var baseUrl = "http://sci-hub.tw/"
+    var url = baseUrl + item.getField('DOI')
     return url;
 };
 
 Zotero.Scihub.updateItem = function(item) {
-    var req = new XMLHttpRequest();
+    //var req = new XMLHttpRequest();
     var url = Zotero.Scihub.generateItemUrl(item);
-    req.open('GET', url, true);
+    //req.open('GET', url, true);
 
-    req.onreadystatechange = function() {
+    // Add SCIHUB link to item
+    item.setField('DOI', url)
+
+    //req.onreadystatechange = function() {
       // Get Scihub pdf and add to item.
-    };
+    //};
 
-    req.send(null);
+    //req.send(null);
 };
 
 if (typeof window !== 'undefined') {
