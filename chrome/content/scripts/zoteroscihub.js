@@ -4,7 +4,21 @@ if(typeof Zotero === 'undefined') {
 Zotero.Scihub = {};
 
 Zotero.Scihub.init = function() {
+  Zotero.Scihub.resetState();
+  stringBundle = document.getElementById('zoteroscihub-bundle');
+  Zotero.Scihub.captchaString = 'Please enter the Captcha on the page that will now open and then re-try updating the PDFs, or wait a while to get unblocked by Scihub if the Captcha is not present.';
+  if (stringBundle != null) {
+      Zotero.Scihub.captchaString = stringBundle.getString('captchaString');
+  }
 
+  // Register the callback in Zotero as an item observer
+  var notifierID = Zotero.Notifier.registerObserver(
+          Zotero.Scihub.notifierCallback, ['item']);
+
+  // Unregister callback when the window closes (important to avoid a memory leak)
+  window.addEventListener('unload', function(e) {
+      Zotero.Notifier.unregisterObserver(notifierID);
+  }, false);
 }
 
 Zotero.Scihub.notifierCallback = {
