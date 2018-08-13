@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://zoteroscihub/locale/overlay.dtd">
+
+<overlay
+    id="zoteroscihub"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script
+        type="application/x-javascript"
+        src="chrome://zoteroscihub/content/scripts/zoteroscihub.js"/>
+
+    <stringbundleset id="stringbundleset">
+        <stringbundle
+            id="zoteroscihub-bundle"
+            src="chrome://zoteroscihub/locale/zoteroscihub.properties"/>
+    </stringbundleset>
+
+    <menupopup id="zotero-tb-actions-popup">
+        <menuitem
+            id="zoteroscihub-tb-actions-export-playground"
+            label="&zotero.scihub.updateAll.label;"
+            insertbefore="zotero-tb-actions-utilities-separator"
+            oncommand="Zotero.Scihub.updateAll();"/>
+    </menupopup>
+
+    <popup id="zotero-collectionmenu">
+        <menuitem
+            id="zotero-collectionmenu-scihub"
+            label="&zotero.scihub.update.label;"
+            oncommand="Zotero.Scihub.updateSelectedEntity()"/>
+    </popup>
+
+    <popup
+        id="zotero-itemmenu"
+        onpopupshowing="ZoteroPane.buildItemContextMenu();">
+        <menuitem
+            id="zotero-itemmenu-scihub"
+            label="&zotero.scihub.update.label;"
+            oncommand="Zotero.Scihubs.updateSelectedItems()"/>
+    </popup>
+</overlay>
