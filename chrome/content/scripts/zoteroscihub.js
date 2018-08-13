@@ -101,7 +101,11 @@ Zotero.Scihub.updateNextItem = function() {
 
 Zotero.Scihub.generateItemUrl = function(item) {
     var baseUrl = "http://sci-hub.tw/"
-    var url = baseUrl + item.getField('DOI')
+    var DOI = item.getField('DOI');
+    var url = "";
+    if(DOI && (typeof DOI == 'string') && DOI.length > 0) {
+      url = baseURL+DOI;
+    } 
     return url;
 };
 
