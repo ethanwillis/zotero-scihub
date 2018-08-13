@@ -140,6 +140,7 @@ Zotero.Scihub.updateItem = function(item) {
 
 if (typeof window !== 'undefined') {
     window.addEventListener('load', function(e) {
+        alert("Loading scihub plugin");
         Zotero.Scihub.init();
     }, false);
 }
