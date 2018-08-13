@@ -1,0 +1,5 @@
+content zoteroscihub chrome/content
+
+overlay chrome://zotero/content/zoteroPane.xul chrome://zoteroscihub/content/overlay.xul
+
+locale zoteroscihub en-US chrome/locale/en-US
