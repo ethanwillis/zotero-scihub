@@ -105,7 +105,7 @@ Zotero.Scihub.generateItemUrl = function(item) {
     var url = "";
     if(DOI && (typeof DOI == 'string') && DOI.length > 0) {
       url = baseURL+DOI;
-    } 
+    }
     return url;
 };
 
@@ -115,7 +115,7 @@ Zotero.Scihub.updateItem = function(item) {
     //req.open('GET', url, true);
 
     // Add SCIHUB link to item
-    item.setField('DOI', url)
+    item.setField('Extra', url)
 
     //req.onreadystatechange = function() {
       // Get Scihub pdf and add to item.
