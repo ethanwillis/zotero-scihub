@@ -33,3 +33,7 @@ Alternatively, version numbers can be passed to make directly:
 ````
 make VERSION=0.0.2
 ````
+
+## Disclaimer
+Use this code at your own peril. No warranties are provided. Keep the laws of your
+locality in mind!
