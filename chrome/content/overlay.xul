@@ -37,6 +37,6 @@
         <menuitem
             id="zotero-itemmenu-scihub"
             label="&zotero.scihub.update.label;"
-            oncommand="Zotero.Scihubs.updateSelectedItems()"/>
+            oncommand="Zotero.Scihub.updateSelectedItems()"/>
     </popup>
 </overlay>
