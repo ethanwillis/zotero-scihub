@@ -5,11 +5,7 @@ Zotero.Scihub = {};
 
 Zotero.Scihub.init = function() {
   Zotero.Scihub.resetState();
-  stringBundle = document.getElementById('zoteroscihub-bundle');
   Zotero.Scihub.captchaString = 'Please enter the Captcha on the page that will now open and then re-try updating the PDFs, or wait a while to get unblocked by Scihub if the Captcha is not present.';
-  if (stringBundle != null) {
-      Zotero.Scihub.captchaString = stringBundle.getString('captchaString');
-  }
 
   // Register the callback in Zotero as an item observer
   var notifierID = Zotero.Notifier.registerObserver(
@@ -70,6 +66,7 @@ Zotero.Scihub.updateSelectedEntity = function(libraryId) {
 };
 
 Zotero.Scihub.updateSelectedItems = function() {
+    Zotero.debug('Updating Selected items');
     Zotero.Scihub.updateItems(ZoteroPane.getSelectedItems());
 };
 
@@ -114,7 +111,7 @@ Zotero.Scihub.updateNextItem = function() {
 };
 
 Zotero.Scihub.generateItemUrl = function(item) {
-    var baseUrl = "http://sci-hub.tw/"
+    var baseURL = "http://sci-hub.tw/"
     var DOI = item.getField('DOI');
     var url = "";
     if(DOI && (typeof DOI == 'string') && DOI.length > 0) {
@@ -124,25 +121,79 @@ Zotero.Scihub.generateItemUrl = function(item) {
 };
 
 Zotero.Scihub.updateItem = function(item) {
-    //var req = new XMLHttpRequest();
-    var url = Zotero.Scihub.generateItemUrl(item);
-    //req.open('GET', url, true);
+  var url = Zotero.Scihub.generateItemUrl(item);
+  var pdf_url = "";
+  var parser = new DOMParser();
+  var req = new XMLHttpRequest();
 
-    // Add SCIHUB link to item
-    item.setField('Extra', url)
 
-    //req.onreadystatechange = function() {
-      // Get Scihub pdf and add to item.
-    //};
+  Zotero.debug('Opening ' + url);
+  req.open('GET', url, true);
+  req.onreadystatechange = function() {
+    if (req.readyState == 4) {
+      if (req.status == 200 && req.responseText.search("captcha") == -1) {
+        if (item.isRegularItem() && !item.isCollection()) {
+          try {
+            Zotero.debug('Parsing webpage ' + url);
+            // Extract direct pdf url from scihub webpage.
+            var split_html = req.responseText.split('<iframe src = "')
+            pdf_url = split_html[1].split('"')[0]
+            // Extract PDF name.
+            var split_url = pdf_url.split('/');
+            var fileBaseName = split_url[split_url.length-1].split('.pdf')[0]
+          } catch(e) {
+            Zotero.debug("Error parsing webpage 1: " + e)
+            Zotero.debug("Error parsing webpage 2: " + req.responseText)
+          }
 
-    //req.send(null);
+          try {
+            // Download PDF and add as attachment.
+            var import_options = {
+              libraryID: item.libraryID,
+              url: pdf_url,
+              parentItemID: item.id,
+              title: item.getField('title'),
+              fileBaseName: fileBaseName,
+              referrer: '',
+              cookieSandbox: null
+            };
+            Zotero.debug("Import Options: " + JSON.stringify(import_options, null, "\t"));
+            var new_item_id = Zotero.Attachments.importFromURL(import_options)
+          } catch(e) {
+            Zotero.debug("Error creating attachment: " + e)
+          }
+        }
+        Zotero.Scihub.updateNextItem();
+      } else if (req.status == 200 || req.status == 403 || req.status == 503) {
+          // If too many requests were made.. pop up a new browser window to
+          // allow user to enter in captcha for scihub.
+          Zotero.debug('Scihub is asking for captcha for: ' + url);
+          alert(Zotero.Scihub.captchaString);
+          req2 = new XMLHttpRequest();
+          req2.open('GET', url, true);
+          req2.onreadystatechange = function() {
+            if (req2.readyState == 4) {
+              if (typeof Zotero.launchURL !== 'undefined') {
+                Zotero.launchURL(url);
+              } else if (typeof Zotero.openInViewer !== 'undefined') {
+                Zotero.openInViewer(url);
+              } else if (typeof ZoteroStandalone !== 'undefined') {
+                ZoteroStandalone.openInViewer(url);
+              } else {
+                window.gBrowser.loadOneTab(url, {inBackground: false});
+              }
+              Zotero.Scihub.resetState();
+            }
+          }
+        req2.send(null);
+      }
+    }
+  };
+  req.send(null);
 };
 
 if (typeof window !== 'undefined') {
     window.addEventListener('load', function(e) {
-        alert("Loading scihub plugin");
         Zotero.Scihub.init();
     }, false);
 }
-
-module.exports = Zotero.Scihub;
