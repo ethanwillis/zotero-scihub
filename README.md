@@ -19,6 +19,9 @@ There will now be a new context menu option titled "Update Scihub PDF." Once you
 click this, a PDF of the file will be downloaded from Scihub and attached to your
 item in Zotero.
 
+For any new papers you add after this plugin is installed, the scihub pdf will be
+automatically downloaded.
+
 
 
 ## Building
