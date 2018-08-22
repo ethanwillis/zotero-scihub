@@ -33,24 +33,26 @@ Zotero.Scihub.resetState = function() {
 }
 
 Zotero.Scihub.updateSelectedEntity = function(libraryId) {
+	Zotero.debug('Updating items in entity')
   if (!ZoteroPane.canEdit()) {
     ZoteroPane.displayCannotEditLibraryMessage();
     return;
   }
 
-  var collection = ZoteroPane.getSelectedCollection();
-  var group = ZoteroPane.getSelectedGroup();
+  var collection = ZoteroPane.getSelectedCollection(false);
+  var group = false; //ZoteroPane.getSelectedGroup();
 
   if (collection) {
-			Zotero.debug('Updating items in collection')
-      var items = [];
-      collection.getChildItems(true, false).forEach(function (item) {
-          items.push(item);
-      });
-      Zotero.Scihub.updateItems(items);
-  } else {
-      Zotero.Scihub.updateAll();
-
+		Zotero.debug("Updating items in entity: Is a collection == true")
+    var items = [];
+    collection.getChildItems(false, false).forEach(function (item) {
+    	items.push(item);
+    });
+    Zotero.Scihub.updateItems(items);
+  } else if(group) {
+		Zotero.debug("Updating items in entity: Is a group == true")
+	} else {
+    Zotero.Scihub.updateAll();
   }
 };
 
@@ -91,6 +93,7 @@ Zotero.Scihub.updateItems = function(items) {
         Zotero.Scihub.numberOfUpdatedItems < Zotero.Scihub.toUpdate) {
         return;
     }
+		Zotero.debug(items[0])
 
 		// Reset our state and figure out how many items we have to update.
     Zotero.Scihub.resetState();
