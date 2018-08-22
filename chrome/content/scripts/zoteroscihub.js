@@ -16,6 +16,7 @@ Zotero.Scihub.init = function() {
   }, false);
 }
 
+// Adds pdfs when new item is added to zotero.
 Zotero.Scihub.notifierCallback = {
   notify: function(event, type, ids, extraData) {
     if(event == "add") {
@@ -41,21 +42,10 @@ Zotero.Scihub.updateSelectedEntity = function(libraryId) {
   var group = ZoteroPane.getSelectedGroup();
 
   if (collection) {
+			Zotero.debug('Updating items in collection')
       var items = [];
-      collection.getChildItems(false).forEach(function (item) {
-          items.push(Zotero.Items.get(item.id));
-      });
-      Zotero.Scihub.updateItems(items);
-  } else if (group) {
-      if (!group.editable) {
-          alert("This group is not editable!");
-          return;
-      }
-      var items = [];
-      group.getCollections().forEach(function(collection) {
-          collection.getChildItems(false).forEach(function(item) {
-              items.push(Zotero.Items.get(item.id));
-          })
+      collection.getChildItems(true, false).forEach(function (item) {
+          items.push(item);
       });
       Zotero.Scihub.updateItems(items);
   } else {
@@ -70,47 +60,64 @@ Zotero.Scihub.updateSelectedItems = function() {
 };
 
 Zotero.Scihub.updateAll = function() {
+		Zotero.debug('Updating all items in Zotero')
     var items = [];
-    Zotero.Items.getAll().forEach(function (item) {
-        if (item.isRegularItem() && !item.isCollection()) {
-            var libraryId = item.getField('libraryID');
-            if (libraryId == null ||
-                    libraryId == '' ||
-                    Zotero.Libraries.isEditable(libraryId)) {
-                items.push(item);
-            }
-        }
+
+		// Get all items
+    Zotero.Items.getAll()
+			.then(function (items) {
+				// Once we have all items, make sure it's a regular item.
+				// And that the library is editable
+				// Then add that item to our list.
+				items.map(function(item) {
+					if (item.isRegularItem() && !item.isCollection()) {
+							var libraryId = item.getField('libraryID');
+							if (libraryId == null ||
+											libraryId == '' ||
+											Zotero.Libraries.isEditable(libraryId)) {
+									items.push(item);
+							}
+					}
+				});
     });
+
+		// Update all of our items with pdfs.
     Zotero.Scihub.updateItems(items);
 };
 
 Zotero.Scihub.updateItems = function(items) {
+		// If we don't have any items to update, just return.
     if (items.length == 0 ||
-            Zotero.Scihub.numberOfUpdatedItems < Zotero.Scihub.toUpdate) {
+        Zotero.Scihub.numberOfUpdatedItems < Zotero.Scihub.toUpdate) {
         return;
     }
 
+		// Reset our state and figure out how many items we have to update.
     Zotero.Scihub.resetState();
     Zotero.Scihub.toUpdate = items.length;
     Zotero.Scihub.itemsToUpdate = items;
+		// Iterate through our items, updating each one with a pdf.
     Zotero.Scihub.updateNextItem();
 };
 
 Zotero.Scihub.updateNextItem = function() {
     Zotero.Scihub.numberOfUpdatedItems++;
 
+		// If we have updated all of our items, reset our state and return.
     if (Zotero.Scihub.current == Zotero.Scihub.toUpdate - 1) {
         Zotero.Scihub.resetState();
         return;
     }
 
+		// Update a single item with a pdf.
     Zotero.Scihub.current++;
     Zotero.Scihub.updateItem(
-            Zotero.Scihub.itemsToUpdate[Zotero.Scihub.current]);
+            Zotero.Scihub.itemsToUpdate[Zotero.Scihub.current]
+		);
 };
 
 Zotero.Scihub.generateItemUrl = function(item) {
-    var baseURL = "http://sci-hub.tw/"
+    var baseURL = "https://sci-hub.tw/"
     var DOI = item.getField('DOI');
     var url = "";
     if(DOI && (typeof DOI == 'string') && DOI.length > 0) {
@@ -122,7 +129,6 @@ Zotero.Scihub.generateItemUrl = function(item) {
 Zotero.Scihub.updateItem = function(item) {
   var url = Zotero.Scihub.generateItemUrl(item);
   var pdf_url = "";
-  var parser = new DOMParser();
   var req = new XMLHttpRequest();
 
 
