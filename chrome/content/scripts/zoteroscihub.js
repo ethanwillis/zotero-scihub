@@ -40,8 +40,7 @@ Zotero.Scihub.updateSelectedEntity = function(libraryId) {
   }
 
   var collection = ZoteroPane.getSelectedCollection(false);
-  var group = false; //ZoteroPane.getSelectedGroup();
-
+	
   if (collection) {
 		Zotero.debug("Updating items in entity: Is a collection == true")
     var items = [];
@@ -49,10 +48,6 @@ Zotero.Scihub.updateSelectedEntity = function(libraryId) {
     	items.push(item);
     });
     Zotero.Scihub.updateItems(items);
-  } else if(group) {
-		Zotero.debug("Updating items in entity: Is a group == true")
-	} else {
-    Zotero.Scihub.updateAll();
   }
 };
 
