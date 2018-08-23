@@ -2,7 +2,7 @@ Zotero.Scihub = {
 	scihub_url: function() {
 		// Set default if not set.
 		if(Zotero.Prefs.get('zoteroscihub.scihub_url') === undefined) {
-			Zotero.Prefs.set('zoteroscihub.scihub_url', 'https://sci-hub.tw')
+			Zotero.Prefs.set('zoteroscihub.scihub_url', 'https://sci-hub.tw/')
 		}
 		return Zotero.Prefs.get('zoteroscihub.scihub_url')
 	},
@@ -129,7 +129,7 @@ Zotero.Scihub = {
 		var DOI = item.getField('DOI');
 		var url = "";
 		if(DOI && (typeof DOI == 'string') && DOI.length > 0) {
-			url = baseURL+DOI;
+			url = baseURL+'/'+DOI;
 		}
 
 		// If not using sci-hub.tw ssl is disabled due to invalid certs.
