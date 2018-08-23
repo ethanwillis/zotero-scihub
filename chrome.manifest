@@ -1,4 +1,5 @@
 content zoteroscihub chrome/content/
+skin zoteroscihub default	chrome/skin/default/zoteroscihub/
 
 overlay chrome://zotero/content/zoteroPane.xul chrome://zoteroscihub/content/overlay.xul
 
