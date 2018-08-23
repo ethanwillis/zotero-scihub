@@ -1,8 +1,16 @@
 Zotero.Scihub = {
 	scihub_url: function() {
+		// Set default if not set.
+		if(Zotero.Prefs.get('zoteroscihub.scihub_url') === undefined) {
+			Zotero.Prefs.set('zoteroscihub.scihub_url', 'https://sci-hub.tw')
+		}
 		return Zotero.Prefs.get('zoteroscihub.scihub_url')
 	},
 	automatic_pdf_download: function() {
+		// Set default if not set.
+		if(Zotero.Prefs.get('zoteroscihub.automatic_pdf_download') === undefined) {
+			Zotero.Prefs.set('zoteroscihub.automatic_pdf_download', true)
+		}
 		return Zotero.Prefs.get('zoteroscihub.automatic_pdf_download')
 	},
 	init: function() {
@@ -20,7 +28,8 @@ Zotero.Scihub = {
 	notifierCallback: {
 		// Adds pdfs when new item is added to zotero.
 		notify: function(event, type, ids, extraData) {
-	    if(event == "add") {
+			automatic_pdf_download_bool = Zotero.Prefs.get('zoteroscihub.automatic_pdf_download');
+	    if(event == "add" && !(automatic_pdf_download_bool === undefined) && automatic_pdf_download_bool == true) {
 	      Zotero.Scihub.updateItems(Zotero.Items.get(ids));
 	    }
 	  }
