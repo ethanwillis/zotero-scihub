@@ -2,7 +2,7 @@ Zotero.Scihub = {
 	scihub_url: function() {
 		// Set default if not set.
 		if(Zotero.Prefs.get('zoteroscihub.scihub_url') === undefined) {
-			Zotero.Prefs.set('zoteroscihub.scihub_url', 'https://sci-hub.tw/')
+			Zotero.Prefs.set('zoteroscihub.scihub_url', 'https://sci-hub.se/')
 		}
 		return Zotero.Prefs.get('zoteroscihub.scihub_url')
 	},
@@ -133,7 +133,7 @@ Zotero.Scihub = {
 		}
 
 		// If not using sci-hub.tw ssl is disabled due to invalid certs.
-		if(!baseURL.includes("sci-hub.tw")) {
+		if(!baseURL.includes("sci-hub.se")) {
 			url = url.replace('https', 'http')
 		}
 
@@ -144,7 +144,7 @@ Zotero.Scihub = {
 		// Check if user preferred url is using https. If so, prepend/replace https.
 		// If not prepend/replace http.
 		scihub_url = Zotero.Prefs.get('zoteroscihub.scihub_url')
-		if(scihub_url.includes("sci-hub.tw")) {
+		if(scihub_url.includes("sci-hub.se")) {
 			prepend = "https"
 		}
 
@@ -159,7 +159,7 @@ Zotero.Scihub = {
 		}
 
 		// If not using sci-hub.tw ssl is disabled due to invalid certs.
-		if(!scihub_url.includes("sci-hub.tw")) {
+		if(!scihub_url.includes("sci-hub.se")) {
 			pdf_url = pdf_url.replace('https', 'http')
 		}
 
