@@ -167,10 +167,11 @@ Zotero.Scihub = {
 	},
 	updateItem: function(item, suppress_warnings) {
 		Zotero.debug("Suppress: " + suppress_warnings)
-		var url = Zotero.Scihub.generateItemUrl(item);
+		var url2 = Zotero.Scihub.generateItemUrl(item);
 		var pdf_url = "";
 		var req = new XMLHttpRequest();
-
+		var url = url2.replace(".tw",".se");
+		
 		Zotero.debug('Opening ' + url);
 		if(url != "") {
 			req.open('GET', url, true);
