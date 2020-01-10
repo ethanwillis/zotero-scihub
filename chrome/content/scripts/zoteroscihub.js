@@ -181,7 +181,9 @@ Zotero.Scihub = {
 						if (item.isRegularItem() && !item.isCollection()) {
 							try {
 								// Extract direct pdf url from scihub webpage.
-								var split_html = req.responseText.split('<iframe src = "')
+								var html_text = req.responseText
+								html_text = html_text.replace(/\s/g, "")
+								var split_html = html_text.split('<iframesrc="')
 								pdf_url = split_html[1].split('"')[0]
 								pdf_url = Zotero.Scihub.fixPdfUrl(pdf_url);
 
@@ -200,6 +202,7 @@ Zotero.Scihub = {
 									parentItemID: item.id,
 									title: item.getField('title'),
 									fileBaseName: fileBaseName,
+									contentType: 'application/pdf',
 									referrer: '',
 									cookieSandbox: null
 								};
