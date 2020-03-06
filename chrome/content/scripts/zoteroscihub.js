@@ -171,7 +171,7 @@ Zotero.Scihub = {
 		var pdf_url = "";
 		var req = new XMLHttpRequest();
 		var url = url2.replace(".tw",".se");
-		
+
 		Zotero.debug('Opening ' + url);
 		if(url != "") {
 			req.open('GET', url, true);
@@ -183,7 +183,7 @@ Zotero.Scihub = {
 								// Extract direct pdf url from scihub webpage.
 								var html_text = req.responseText
 								html_text = html_text.replace(/\s/g, "")
-								var split_html = html_text.split('<iframesrc="')
+								var split_html = html_text.split('<iframe src="')
 								pdf_url = split_html[1].split('"')[0]
 								pdf_url = Zotero.Scihub.fixPdfUrl(pdf_url);
 
