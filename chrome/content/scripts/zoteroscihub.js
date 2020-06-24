@@ -175,21 +175,20 @@ Zotero.Scihub = {
 		Zotero.debug('Opening ' + url);
 		if(url != "") {
 			req.open('GET', url, true);
+			req.responseType = "document";
 			req.onreadystatechange = function() {
 				if (req.readyState == 4) {
-					if (req.status == 200 && req.responseText.search("captcha") == -1) {
+					if (req.status == 200 && req.responseXML.querySelector("iframe#pdf") !== null
+					/* && req.responseText.search("captcha") == -1 */ ) {
 						if (item.isRegularItem() && !item.isCollection()) {
 							try {
 								// Extract direct pdf url from scihub webpage.
-								var html_text = req.responseText
-								html_text = html_text.replace(/\s/g, "")
-								var split_html = url.includes("sci-hub.shop") ? html_text.split('<iframesrc="') : html_text.split('<iframe src="')
-								pdf_url = split_html[1].split('"')[0]
+								pdf_url = req.responseXML.querySelector("iframe#pdf").src
 								pdf_url = Zotero.Scihub.fixPdfUrl(pdf_url);
 
 								// Extract PDF name.
-								var split_url = pdf_url.split('/');
-								var fileBaseName = split_url[split_url.length-1].split('.pdf')[0]
+								var pdf_url_obj = new URL(pdf_url),
+									fileBaseName = pdf_url_obj.pathName.slice(1);
 							} catch(e) {
 								Zotero.debug("Error parsing webpage 1" + e)
 							}
