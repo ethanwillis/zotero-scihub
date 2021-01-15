@@ -2,7 +2,7 @@ Zotero.Scihub = {
 	scihub_url: function() {
 		// Set default if not set.
 		if(Zotero.Prefs.get('zoteroscihub.scihub_url') === undefined) {
-			Zotero.Prefs.set('zoteroscihub.scihub_url', 'https://sci-hub.se/')
+			Zotero.Prefs.set('zoteroscihub.scihub_url', 'https://sci-hub.do/')
 		}
 		return Zotero.Prefs.get('zoteroscihub.scihub_url')
 	},
@@ -133,20 +133,20 @@ Zotero.Scihub = {
 		}
 
 		// If not using sci-hub.tw ssl is disabled due to invalid certs.
-		if(!baseURL.includes("sci-hub.se")) {
-			url = url.replace('https', 'http')
-		}
+		// if(!baseURL.includes("sci-hub.do")) {
+		// 	url = url.replace('https', 'http')
+		// }
 
 		return url;
 	},
 	fixPdfUrl: function(pdf_url) {
-		let prepend = "http"
+		let prepend = "https"
 		// Check if user preferred url is using https. If so, prepend/replace https.
 		// If not prepend/replace http.
 		scihub_url = Zotero.Prefs.get('zoteroscihub.scihub_url')
-		if(scihub_url.includes("sci-hub.se")) {
-			prepend = "https"
-		}
+		// if(scihub_url.includes("sci-hub.do")) {
+		// 	prepend = "https"
+		// }
 
 		// Handle error on Scihub where https/http is not prepended to url
 		if(pdf_url.slice(0, 2) == "//") {
@@ -159,9 +159,9 @@ Zotero.Scihub = {
 		}
 
 		// If not using sci-hub.tw ssl is disabled due to invalid certs.
-		if(!scihub_url.includes("sci-hub.se")) {
-			pdf_url = pdf_url.replace('https', 'http')
-		}
+		// if(!scihub_url.includes("sci-hub.do")) {
+		// 	pdf_url = pdf_url.replace('https', 'http')
+		// }
 
 		return pdf_url;
 	},
@@ -170,7 +170,7 @@ Zotero.Scihub = {
 		var url2 = Zotero.Scihub.generateItemUrl(item);
 		var pdf_url = "";
 		var req = new XMLHttpRequest();
-		var url = url2.replace(".tw",".se");
+		var url = url2.replace(".tw",".do");
 
 		Zotero.debug('Opening ' + url);
 		if(url != "") {
@@ -184,13 +184,17 @@ Zotero.Scihub = {
 							try {
 								// Extract direct pdf url from scihub webpage.
 								pdf_url = req.responseXML.querySelector("iframe#pdf").src
+								Zotero.debug('Got pdf_url from embedding page: '+pdf_url);
 								pdf_url = Zotero.Scihub.fixPdfUrl(pdf_url);
+								Zotero.debug('After fixPdfUrl, getting pdf_url: '+ pdf_url);
 
 								// Extract PDF name.
-								var pdf_url_obj = new URL(pdf_url),
-									fileBaseName = pdf_url_obj.pathName.slice(1);
+								// var pdf_url_obj = new URL(pdf_url),
+								fileBaseName = pdf_url.split('/').pop();
 							} catch(e) {
-								Zotero.debug("Error parsing webpage 1" + e)
+								Zotero.debug("Error parsing webpage 1" + e);
+								alert('Error parsing webpage 1, got error: '+ e);
+
 							}
 
 							try {

@@ -22,7 +22,14 @@ item in Zotero.
 For any new papers you add after this plugin is installed, the scihub pdf will be
 automatically downloaded.
 
+#### Configuration
 
+There are two parameters that can be edited, to do so go to the configuration editor 
+
+*Preferences > Advanced > General > Config Editor (button near the bottom of the window)*
+
+- `extensions.zotero.zoteroscihub.automatic_pdf_download` (default `true`)  - automatically download pdfs from scihub when entries are added to zotero
+- `extensions.zotero.zoteroscihub.scihub_url` (default `https://sci-hub.do`) - url to try to get pdfs from!
 
 ## Building
 
