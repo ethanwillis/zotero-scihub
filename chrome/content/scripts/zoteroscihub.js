@@ -127,7 +127,7 @@ Zotero.Scihub = {
 	generateItemUrl: function(item) {
 		var baseURL = Zotero.Prefs.get('zoteroscihub.scihub_url')
 		var DOI = item.getField('DOI').length > 0 ? item.getField('DOI') : item.getField('extra');
-		DOI = DOI.indexOf("\n")> -1 ? DOI.substring(0, DOI.indexOf("\n")).replace('DOI: ', '') : DOI.replace('DOI: ', '');
+		DOI = DOI.indexOf("\n")> -1 ? DOI.substring(DOI.indexOf('DOI: '), DOI.indexOf("\n", DOI.indexOf('DOI: '))).replace('DOI: ', '') : DOI.replace('DOI: ', '');
 		var url = "";
 		if(DOI && (typeof DOI == 'string') && DOI.length > 0) {
 			url = baseURL+'/'+DOI;
