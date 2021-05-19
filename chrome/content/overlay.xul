@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="chrome://zoteroscihub/skin/overlay.css" type="text/css"?>
+
 <!DOCTYPE overlay
           SYSTEM "chrome://zoteroscihub/locale/overlay.dtd">
 
@@ -16,27 +16,29 @@
 
     <menupopup id="menu_ToolsPopup">
         <menuseparator />
-        <menuitem id="zotero-scihub-tools-updateall"
+        <menuitem class="menuitem-iconic"
+                  image="chrome://zoteroscihub/skin/favicon.png"
+                  id="zotero-scihub-tools-updateall"
                   label="&zotero.scihub.updateAll.label;"
-                  command="cmd_zotero_scihub_update_all"
-                  class="menuitem-iconic zotero-scihub-icon" />
+                  command="cmd_zotero_scihub_update_all" />
     </menupopup>
 
 
     <popup id="zotero-collectionmenu">
         <menuseparator />
-        <menuitem id="zotero-collectionmenu-scihub"
+        <menuitem class="menuitem-iconic"
+                  image="chrome://zoteroscihub/skin/favicon.png"
+                  id="zotero-collectionmenu-scihub"
                   label="&zotero.scihub.updateCollection.label;"
-                  oncommand="Zotero.Scihub.updateSelectedEntity()"
-                  class="menuitem-iconic zotero-scihub-icon" />
+                  oncommand="Zotero.Scihub.updateSelectedEntity()" />
     </popup>
 
-    <popup id="zotero-itemmenu"
-           onpopupshowing="ZoteroPane.buildItemContextMenu();">
+    <popup id="zotero-itemmenu">
         <menuseparator />
-        <menuitem id="zotero-itemmenu-scihub"
+        <menuitem class="menuitem-iconic"
+                  image="chrome://zoteroscihub/skin/favicon.png"
+                  id="zotero-itemmenu-scihub"
                   label="&zotero.scihub.update.label;"
-                  oncommand="Zotero.Scihub.updateSelectedItems()"
-                  class="menuitem-iconic zotero-scihub-icon" />
+                  oncommand="Zotero.Scihub.updateSelectedItems()" />
     </popup>
 </overlay>

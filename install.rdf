@@ -9,7 +9,7 @@
     <RDF:Description RDF:about="urn:mozilla:install-manifest"
                      em:id="zoteroscihub@elsevier.com"
                      em:name="Zotero Scihub"
-                     em:version="0.0.7"
+                     em:version="0.0.8"
                      em:type="2"
                      em:creator="Ethan Willis"
                      em:description="Zotero plugin for automatic download of PDFs from Scihub"
