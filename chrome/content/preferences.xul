@@ -10,7 +10,7 @@
         <prefpane id="zotero-prefpane-zoteroscihub"
                   insertafter="zotero-prefpane-advanced"
                   label="Zotero Scihub"
-                  image="chrome://zoteroscihub/skin/favicon.png"
+                  image="chrome://zoteroscihub/skin/sci-hub-square.svg"
                   onpaneload="initPreferences();">
             <preferences id="zotero-preferences-zoteroscihub">
                 <preference id="pref-zoteroscihub-automatic-pdf-download"
