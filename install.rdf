@@ -13,7 +13,7 @@
                      em:type="2"
                      em:creator="Ethan Willis"
                      em:description="Zotero plugin for automatic download of PDFs from Scihub"
-                     em:homepageURL="https://github.com/ethanwillis/zotero-scihub">
+                     em:homepageURL="https://github.com/tausackhn/zotero-scihub">
         <em:type>2</em:type>
         <em:targetApplication RDF:resource="rdf:#$x61SL3" />
         <em:targetApplication>
