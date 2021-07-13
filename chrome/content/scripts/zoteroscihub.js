@@ -1,23 +1,26 @@
 Zotero.Scihub = {
     CAPTCHA_MESSAGE: "Failed to fetch PDF. Please enter the Captcha on the page that will now open and then re-try updating the PDFs, or wait a while to get unblocked by Scihub if the Captcha is not present",
-    scihub_url: function() {
+    DEFAULT_SCIHUB_URL: "https://sci-hub.do/",
+    DEFAULT_AUTOMATIC_PDF_DOWNLOAD: true,
+
+    init_scihub_url: function() {
         // Set default if not set.
         if (Zotero.Prefs.get('zoteroscihub.scihub_url') === undefined) {
-            Zotero.Prefs.set('zoteroscihub.scihub_url', 'https://sci-hub.do/')
+            Zotero.Prefs.set('zoteroscihub.scihub_url', Zotero.Scihub.DEFAULT_SCIHUB_URL);
         }
-        return Zotero.Prefs.get('zoteroscihub.scihub_url')
     },
-    automatic_pdf_download: function() {
+
+    init_automatic_pdf_download: function() {
         // Set default if not set.
         if (Zotero.Prefs.get('zoteroscihub.automatic_pdf_download') === undefined) {
-            Zotero.Prefs.set('zoteroscihub.automatic_pdf_download', true)
+            Zotero.Prefs.set('zoteroscihub.automatic_pdf_download', Zotero.Scihub.DEFAULT_AUTOMATIC_PDF_DOWNLOAD);
         }
-        return Zotero.Prefs.get('zoteroscihub.automatic_pdf_download')
     },
+
     init: function() {
         Zotero.Scihub.resetState();
-        Zotero.Scihub.scihub_url();
-        Zotero.Scihub.automatic_pdf_download();
+        Zotero.Scihub.init_scihub_url();
+        Zotero.Scihub.init_automatic_pdf_download();
 
         // Register the callback in Zotero as an item observer
         var notifierID = Zotero.Notifier.registerObserver(
@@ -28,6 +31,7 @@ Zotero.Scihub = {
             Zotero.Notifier.unregisterObserver(notifierID);
         }, false);
     },
+
     notifierCallback: {
         // Adds pdfs when new item is added to zotero.
         notify: function(event, type, ids, extraData) {
@@ -125,101 +129,86 @@ Zotero.Scihub = {
             suppress_warnings
         );
     },
+
     generateItemUrl: function(item) {
         var baseURL = Zotero.Prefs.get('zoteroscihub.scihub_url')
         var DOI = item.getField('DOI');
-        var url = "";
         if (DOI && (typeof DOI == 'string') && DOI.length > 0) {
-            url = baseURL + '/' + DOI;
+            // Correctly join URLs avoiding "//" in the path
+            return new URL(DOI, baseURL);
+        } else {
+            return null;
         }
-
-        // If not using sci-hub.tw ssl is disabled due to invalid certs.
-        // if(!baseURL.includes("sci-hub.do")) {
-        // 	url = url.replace('https', 'http')
-        // }
-
-        return url;
     },
-    fixPdfUrl: function(pdf_url) {
-        let prepend = "https"
-        // Check if user preferred url is using https. If so, prepend/replace https.
-        // If not prepend/replace http.
-        scihub_url = Zotero.Prefs.get('zoteroscihub.scihub_url')
-        // if(scihub_url.includes("sci-hub.do")) {
-        // 	prepend = "https"
-        // }
 
-        // Handle error on Scihub where https/http is not prepended to url
-        if (pdf_url.slice(0, 2) == "//") {
-            pdf_url = prepend + ":" + pdf_url
-        }
-
-        // Make sure all scihub urls use https/http and not http.
-        if (pdf_url.slice(0, 5) != "https") {
-            pdf_url = prepend + pdf_url.slice(4)
-        }
-
-        // If not using sci-hub.tw ssl is disabled due to invalid certs.
-        // if(!scihub_url.includes("sci-hub.do")) {
-        // 	pdf_url = pdf_url.replace('https', 'http')
-        // }
-
-        return pdf_url;
+    urlToHttps: function(url) {
+        // Default to the secure connection for fetching PDFs
+        // Handles special case if URL starts with "//"
+        safe_url = new URL(url.replace(/^\/\//, "https://"));
+        safe_url.protocol = "https";
+        return safe_url;
     },
+
+    extractFileName: function(url) {
+        // Keeps the last token of the pathname supposing it is filename, eg
+        // https://example.com/path/<filename.pdf>?params
+        return new URL(url).pathname.split('/').pop();
+    },
+
     updateItem: function(item, suppress_warnings) {
         Zotero.debug("Suppress: " + suppress_warnings)
-        var url2 = Zotero.Scihub.generateItemUrl(item);
-        var pdf_url = "";
-        var req = new XMLHttpRequest();
-        var url = url2.replace(".tw", ".do");
-
+        var url = Zotero.Scihub.generateItemUrl(item);
         Zotero.debug('Opening ' + url);
-        if (url != "") {
-            req.open('GET', url, true);
-            req.responseType = "document";
-            req.onreadystatechange = function() {
-                if (req.readyState === XMLHttpRequest.DONE) {
-                    if (req.status == 200 && req.responseXML.querySelector("iframe#pdf") !== null
-                        /* && req.responseText.search("captcha") == -1 */
-                    ) {
-                        if (item.isRegularItem() && !item.isCollection()) {
-                            try {
-                                // Extract direct pdf url from scihub webpage.
-                                pdf_url = req.responseXML.querySelector("iframe#pdf").src
-                                Zotero.debug('Got pdf_url from embedding page: ' + pdf_url);
-                                pdf_url = Zotero.Scihub.fixPdfUrl(pdf_url);
-                                Zotero.debug('After fixPdfUrl, getting pdf_url: ' + pdf_url);
 
-                                // Extract PDF name.
-                                // var pdf_url_obj = new URL(pdf_url),
-                                fileBaseName = pdf_url.split('/').pop();
-                            } catch (e) {
-                                Zotero.debug("Error parsing webpage 1" + e);
-                                alert('Error parsing webpage 1, got error: ' + e);
-
-                            }
-
-                            Zotero.Scihub.attachRemotePDFToItem(pdf_url, fileBaseName, item);
-                        }
-                        Zotero.Scihub.updateNextItem();
-                    } else if (req.status == 200 || req.status == 403 || req.status == 503) {
-                        Zotero.Scihub.handleCaptcha(url);
-                        Zotero.Scihub.resetState();
-                    }
-                }
-            };
-            req.send(null);
+        if (url != null && item.isRegularItem() && !item.isCollection()) {
+            Zotero.Scihub.fetchFromSciHub(
+                url, 
+                (pdfUrl) => { Zotero.Scihub.attachRemotePDFToItem(pdfUrl, item) },
+                () => { Zotero.Scihub.handleCaptcha(url) });
         } else if (!(suppress_warnings === undefined) && suppress_warnings == false) {
             alert("To be able to fetch a PDF your library item must currently have a DOI")
         }
-
     },
 
-    attachRemotePDFToItem: function(pdf_url, fileBaseName, item) {
+    fetchFromSciHub: function(url, onSuccess, onFailure) {
+        req = new XMLHttpRequest();
+        req.open('GET', url, true);
+        req.responseType = "document";
+        req.onreadystatechange = function() {
+            if (req.readyState !== XMLHttpRequest.DONE) {
+                return;
+            }
+
+            // TODO: detect captcha by response content
+            if (req.status == 200 && req.responseXML.querySelector("iframe#pdf") !== null) {
+                try {
+                    pdf_url = req.responseXML.querySelector("iframe#pdf").src;
+                    Zotero.debug('Got pdf_url from embedding page: ' + pdf_url);
+
+                    pdf_url = Zotero.Scihub.urlToHttps(pdf_url);
+                    Zotero.debug('Converted to https: ' + pdf_url);
+
+                    onSuccess(pdf_url);
+                } catch (e) {
+                    Zotero.debug("Error parsing webpage" + e);
+                    alert('Error parsing webpage, got error: ' + e);
+                }
+                Zotero.Scihub.updateNextItem();
+            } else if (req.status == 200 || req.status == 403 || req.status == 503) {
+                onFailure();
+                Zotero.Scihub.resetState();
+            }
+        };
+        req.send();
+    },
+
+    attachRemotePDFToItem: function(pdf_url, item) {
+        const fileBaseName = Zotero.Scihub.extractFileName(pdf_url);
+
         // Download PDF and add as attachment
         var import_options = {
             libraryID: item.libraryID,
-            url: pdf_url,
+            url: pdf_url.href,
             parentItemID: item.id,
             title: item.getField('title'),
             fileBaseName: fileBaseName,
