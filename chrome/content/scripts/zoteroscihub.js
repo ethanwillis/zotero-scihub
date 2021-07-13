@@ -1,4 +1,5 @@
 Zotero.Scihub = {
+    CAPTCHA_MESSAGE: "Failed to fetch PDF. Please enter the Captcha on the page that will now open and then re-try updating the PDFs, or wait a while to get unblocked by Scihub if the Captcha is not present",
     scihub_url: function() {
         // Set default if not set.
         if (Zotero.Prefs.get('zoteroscihub.scihub_url') === undefined) {
@@ -177,7 +178,7 @@ Zotero.Scihub = {
             req.open('GET', url, true);
             req.responseType = "document";
             req.onreadystatechange = function() {
-                if (req.readyState == 4) {
+                if (req.readyState === XMLHttpRequest.DONE) {
                     if (req.status == 200 && req.responseXML.querySelector("iframe#pdf") !== null
                         /* && req.responseText.search("captcha") == -1 */
                     ) {
@@ -216,31 +217,10 @@ Zotero.Scihub = {
                                         Zotero.debug("Import result: " + JSON.stringify(result))
                                     })
                                     .catch(function(error) {
-                                        Zotero.debug("Import error: " + error)
                                         // See the following code, if Scihub throws a captcha then our import will throw this error.
                                         // https://github.com/zotero/zotero/blob/26056c87f1d0b31dc56981adaabcab8fc2f85294/chrome/content/zotero/xpcom/attachments.js#L863
-                                        // If a PDF link shows a captcha, pop up a new browser window to enter the captcha.
-                                        Zotero.debug("Scihub is asking for captcha for: " + pdf_url);
-                                        alert('Please enter the Captcha on the page that will now open and then re-try updating the PDFs, or wait a while to get unblocked by Scihub if the Captcha is not present.');
-                                        req2 = new XMLHttpRequest();
-                                        req2.open('GET', pdf_url, true);
-                                        req2.onreadystatechange = function() {
-                                            if (req2.readyState == 4) {
-                                                if (typeof Zotero.launchURL !== 'undefined') {
-                                                    Zotero.launchURL(pdf_url);
-                                                } else if (typeof Zotero.openInViewer !== 'undefined') {
-                                                    Zotero.openInViewer(pdf_url);
-                                                } else if (typeof ZoteroStandalone !== 'undefined') {
-                                                    ZoteroStandalone.openInViewer(pdf_url);
-                                                } else {
-                                                    window.gBrowser.loadOneTab(pdf_url, {
-                                                        inBackground: false
-                                                    });
-                                                }
-                                                Zotero.Scihub.resetState();
-                                            }
-                                        }
-                                        req2.send(null);
+                                        Zotero.debug("Import error: " + error);
+                                        Zotero.Scihub.handleCaptcha(pdf_url);
                                     });
                             } catch (e) {
                                 Zotero.debug("Error creating attachment: " + e)
@@ -248,29 +228,8 @@ Zotero.Scihub = {
                         }
                         Zotero.Scihub.updateNextItem();
                     } else if (req.status == 200 || req.status == 403 || req.status == 503) {
-                        // If too many requests were made.. pop up a new browser window to
-                        // allow user to enter in captcha for scihub.
-                        Zotero.debug('Scihub is asking for captcha for: ' + url);
-                        alert(Zotero.Scihub.captchaString);
-                        req2 = new XMLHttpRequest();
-                        req2.open('GET', url, true);
-                        req2.onreadystatechange = function() {
-                            if (req2.readyState == 4) {
-                                if (typeof Zotero.launchURL !== 'undefined') {
-                                    Zotero.launchURL(url);
-                                } else if (typeof Zotero.openInViewer !== 'undefined') {
-                                    Zotero.openInViewer(url);
-                                } else if (typeof ZoteroStandalone !== 'undefined') {
-                                    ZoteroStandalone.openInViewer(url);
-                                } else {
-                                    window.gBrowser.loadOneTab(url, {
-                                        inBackground: false
-                                    });
-                                }
-                                Zotero.Scihub.resetState();
-                            }
-                        }
-                        req2.send(null);
+                        Zotero.Scihub.handleCaptcha(url);
+                        Zotero.Scihub.resetState();
                     }
                 }
             };
@@ -279,6 +238,26 @@ Zotero.Scihub = {
             alert("To be able to fetch a PDF your library item must currently have a DOI")
         }
 
+    },
+    handleCaptcha: function(url) {
+        Zotero.debug("Scihub is asking for captcha for: " + url);
+        alert(Zotero.Scihub.CAPTCHA_MESSAGE);
+        Zotero.Scihub.openURLInZotero(url);
+    },
+    openURLInZotero: function(url) {
+        // Redirects user to the given URL, eg to enter captcha or visually debug what is broken
+
+        if (typeof Zotero.launchURL !== 'undefined') {
+            Zotero.launchURL(url);
+        } else if (typeof Zotero.openInViewer !== 'undefined') {
+            Zotero.openInViewer(url);
+        } else if (typeof ZoteroStandalone !== 'undefined') {
+            ZoteroStandalone.openInViewer(url);
+        } else {
+            window.gBrowser.loadOneTab(url, {
+                inBackground: false
+            });
+        }
     }
 };
 
