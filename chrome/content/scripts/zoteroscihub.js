@@ -199,32 +199,7 @@ Zotero.Scihub = {
 
                             }
 
-                            try {
-                                // Download PDF and add as attachment.
-                                var import_options = {
-                                    libraryID: item.libraryID,
-                                    url: pdf_url,
-                                    parentItemID: item.id,
-                                    title: item.getField('title'),
-                                    fileBaseName: fileBaseName,
-                                    contentType: 'application/pdf',
-                                    referrer: '',
-                                    cookieSandbox: null
-                                };
-                                Zotero.debug("Import Options: " + JSON.stringify(import_options, null, "\t"));
-                                Zotero.Attachments.importFromURL(import_options)
-                                    .then(function(result) {
-                                        Zotero.debug("Import result: " + JSON.stringify(result))
-                                    })
-                                    .catch(function(error) {
-                                        // See the following code, if Scihub throws a captcha then our import will throw this error.
-                                        // https://github.com/zotero/zotero/blob/26056c87f1d0b31dc56981adaabcab8fc2f85294/chrome/content/zotero/xpcom/attachments.js#L863
-                                        Zotero.debug("Import error: " + error);
-                                        Zotero.Scihub.handleCaptcha(pdf_url);
-                                    });
-                            } catch (e) {
-                                Zotero.debug("Error creating attachment: " + e)
-                            }
+                            Zotero.Scihub.attachRemotePDFToItem(pdf_url, fileBaseName, item);
                         }
                         Zotero.Scihub.updateNextItem();
                     } else if (req.status == 200 || req.status == 403 || req.status == 503) {
@@ -239,11 +214,40 @@ Zotero.Scihub = {
         }
 
     },
+
+    attachRemotePDFToItem: function(pdf_url, fileBaseName, item) {
+        // Download PDF and add as attachment
+        var import_options = {
+            libraryID: item.libraryID,
+            url: pdf_url,
+            parentItemID: item.id,
+            title: item.getField('title'),
+            fileBaseName: fileBaseName,
+            contentType: 'application/pdf',
+            referrer: '',
+            cookieSandbox: null
+        };
+        Zotero.debug("Import Options: " + JSON.stringify(import_options, null, "\t"));
+        Zotero.Attachments
+            .importFromURL(import_options)
+            .then(function(result) {
+                Zotero.debug("Import result: " + JSON.stringify(result))
+            })
+            .catch(function(error) {
+                // See the following code, if Scihub throws a captcha then our import will throw this error.
+                // https://github.com/zotero/zotero/blob/26056c87f1d0b31dc56981adaabcab8fc2f85294/chrome/content/zotero/xpcom/attachments.js#L863
+                Zotero.debug("Import error: " + error);
+                Zotero.Scihub.handleCaptcha(pdf_url);
+            });
+    },
+
     handleCaptcha: function(url) {
+        // TODO: better way to notify user that there was a problem? not necessary captcha problem
         Zotero.debug("Scihub is asking for captcha for: " + url);
         alert(Zotero.Scihub.CAPTCHA_MESSAGE);
         Zotero.Scihub.openURLInZotero(url);
     },
+
     openURLInZotero: function(url) {
         // Redirects user to the given URL, eg to enter captcha or visually debug what is broken
 
