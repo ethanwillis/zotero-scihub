@@ -57,14 +57,6 @@ Zotero.Scihub = {
     updateSelectedItems: async function() {
         Zotero.debug('scihub: updating selected items');
         const items = ZoteroPane.getSelectedItems();
-
-        // Alert user if certain items are missing DOI
-        const missingDoi = items.filter((item) => !Zotero.Scihub.getDoi(item));
-        if (missingDoi.length > 0) {
-            const missingDoiTitles = missingDoi.map((item) => item.getField('title'));
-            alert(`Following items are missing DOI:\n${missingDoiTitles.join('\n')}`)
-        }
-
         await Zotero.Scihub.updateItems(items);
     },
 
@@ -93,6 +85,7 @@ Zotero.Scihub = {
             // Skip items without DOI or if URL generation had failed
             const url = Zotero.Scihub.generateItemUrl(item);
             if (!url) {
+                Zotero.Scihub.showPopup(`Missing DOI for "${item.getField('title')}"`)
                 Zotero.debug(`scihub: failed to generate URL for "${item.getField('title')}"`)
                 continue;
             }
@@ -137,6 +130,7 @@ Zotero.Scihub = {
     },
 
     updateItem: async function(url, item) {
+        Zotero.Scihub.showPopup(`Fetching PDF for "${item.getField('title')}"`)
         const pdfUrl = Zotero.Scihub.urlToHttps(await Zotero.Scihub.querySciHub(url));
         await Zotero.Scihub.attachRemotePDFToItem(pdfUrl, item);
     },
@@ -202,6 +196,17 @@ Zotero.Scihub = {
                 inBackground: false
             });
         }
+    },
+
+    showPopup: function(body, timeout = 5) {
+        // Shows user-friendly Zotero popup
+        const seconds = 1000;
+        const pw = new Zotero.ProgressWindow();
+        pw.changeHeadline(`Sci-Hub`)
+        if (Array.isArray(body)) body = body.join('\n');
+        pw.addDescription(body);
+        pw.show();
+        pw.startCloseTimer(timeout * seconds);
     }
 };
 
