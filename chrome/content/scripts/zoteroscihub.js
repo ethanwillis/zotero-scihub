@@ -109,7 +109,8 @@ Zotero.Scihub = {
     getDoi: function(item) {
         const doiField = item.getField('DOI');
         const doiFromExtra = Zotero.Scihub.getDoiFromExtra(item);
-        const doi = doiField || doiFromExtra;
+        const doiFromUrl = Zotero.Scihub.getDoiFromUrl(item);
+        const doi = doiField || doiFromExtra || doiFromUrl;
 
         if (doi && (typeof doi == 'string') && doi.length > 0) {
             return doi;
@@ -123,6 +124,16 @@ Zotero.Scihub = {
         const match = extra.match(/^DOI: (.+)$/m);
         if (match) {
             return match[1];
+        }
+    },
+
+    getDoiFromUrl: function(item) {
+        // If item was added by the doi.org url it can be extracted from its pathname
+        const url = item.getField('url');
+        const isDoiOrg = url.match(/\bdoi\.org\b/i);
+        if (isDoiOrg) {
+            const doiPath = new URL(url).pathname;
+            return decodeURIComponent(doiPath).replace(/^\//, '');
         }
     },
 
