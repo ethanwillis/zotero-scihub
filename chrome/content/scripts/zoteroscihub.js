@@ -107,9 +107,22 @@ Zotero.Scihub = {
     },
 
     getDoi: function(item) {
-        const doi = item.getField('DOI');
+        const doiField = item.getField('DOI');
+        const doiFromExtra = Zotero.Scihub.getDoiFromExtra(item);
+        const doi = doiField || doiFromExtra;
+
         if (doi && (typeof doi == 'string') && doi.length > 0) {
             return doi;
+        }
+    },
+
+    getDoiFromExtra: function(item) {
+        // For books "extra" field might contain DOI instead
+        // values in extra are <key>: <value> separated by newline
+        const extra = item.getField('extra');
+        const match = extra.match(/^DOI: (.+)$/m);
+        if (match) {
+            return match[1];
         }
     },
 
