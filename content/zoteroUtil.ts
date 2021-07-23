@@ -1,4 +1,7 @@
 import { UrlUtil } from './urlUtil'
+import type { ZoteroItem, IZotero } from '../typings/zotero'
+
+declare const Zotero: IZotero
 
 export abstract class ZoteroUtil {
   public static async attachRemotePDFToItem(pdfUrl: URL, item: ZoteroItem): Promise<void> {

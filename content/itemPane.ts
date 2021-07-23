@@ -1,3 +1,7 @@
+import type { IZotero, IZoteroPane } from '../typings/zotero'
+declare const ZoteroPane: IZoteroPane
+declare const Zotero: IZotero
+
 export = new class {
   public async updateSelectedEntity(libraryId: string) {
     Zotero.debug(`scihub: updating items in entity ${libraryId}`)

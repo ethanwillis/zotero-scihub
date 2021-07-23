@@ -1,5 +1,8 @@
+import type { ZoteroItem, IZotero, ZoteroObserver } from '../typings/zotero'
 import { UrlUtil } from './urlUtil'
 import { ZoteroUtil } from './zoteroUtil'
+
+declare const Zotero: IZotero
 
 enum HttpCodes {
   DONE = 200,
@@ -13,7 +16,7 @@ class PdfNotFoundError extends Error {
   }
 }
 
-class ItemObserver {
+class ItemObserver implements ZoteroObserver {
   // Called when a new item is added to the library
   public async notify(event: string, _type: string, ids: [number], _extraData: Record<string, any>) {
     const automaticPdfDownload = Zotero.Scihub.isAutomaticPdfDownload()
@@ -27,13 +30,14 @@ class ItemObserver {
 
 class CScihub {
   // TOOD: only bulk-update items which are missing paper attachement
-  private DEFAULT_SCIHUB_URL = 'https://sci-hub.tf/'
-  private DEFAULT_AUTOMATIC_PDF_DOWNLOAD = true
-  private observerId: number = null
+  private static readonly DEFAULT_SCIHUB_URL = 'https://sci-hub.tf/'
+  private static readonly DEFAULT_AUTOMATIC_PDF_DOWNLOAD = true
+  private observerId: number | null = null
+  private initialized = false
 
   public getBaseScihubUrl(): string {
     if (Zotero.Prefs.get('zoteroscihub.scihub_url') === undefined) {
-      Zotero.Prefs.set('zoteroscihub.scihub_url', this.DEFAULT_SCIHUB_URL)
+      Zotero.Prefs.set('zoteroscihub.scihub_url', CScihub.DEFAULT_SCIHUB_URL)
     }
 
     return Zotero.Prefs.get('zoteroscihub.scihub_url') as string
@@ -41,7 +45,7 @@ class CScihub {
 
   public isAutomaticPdfDownload(): boolean {
     if (Zotero.Prefs.get('zoteroscihub.automatic_pdf_download') === undefined) {
-      Zotero.Prefs.set('zoteroscihub.automatic_pdf_download', this.DEFAULT_AUTOMATIC_PDF_DOWNLOAD)
+      Zotero.Prefs.set('zoteroscihub.automatic_pdf_download', CScihub.DEFAULT_AUTOMATIC_PDF_DOWNLOAD)
     }
 
     return Zotero.Prefs.get('zoteroscihub.automatic_pdf_download') as boolean
@@ -49,11 +53,15 @@ class CScihub {
 
   public load(): void {
     // Register the callback in Zotero as an item observer
-    this.observerId = Zotero.Notifier.registerObserver(ItemObserver, ['item'], 'Scihub')
+    if (this.initialized) return
+    this.observerId = Zotero.Notifier.registerObserver(new ItemObserver(), ['item'], 'Scihub')
+    this.initialized = true
   }
 
   public unload(): void {
-    Zotero.Notifier.unregisterObserver(this.observerId)
+    if (this.observerId) {
+      Zotero.Notifier.unregisterObserver(this.observerId)
+    }
   }
 
   public async updateItems(items: [ZoteroItem]): Promise<void> {
@@ -97,13 +105,13 @@ class CScihub {
     ZoteroUtil.showPopup('Fetching PDF', item.getField('title'))
 
     const xhr = await Zotero.HTTP.request('GET', scihubUrl.href, { responseType: 'document' })
-    const pdfIframe = xhr.responseXML.querySelector('iframe#pdf') as HTMLIFrameElement
-    const body = xhr.responseXML.querySelector('body')
+    const pdfIframe = xhr.responseXML?.querySelector('iframe#pdf') as HTMLIFrameElement
+    const body = xhr.responseXML?.querySelector('body')
 
-    if (xhr.status === HttpCodes.DONE && pdfIframe !== null) {
+    if (xhr.status === HttpCodes.DONE && pdfIframe) {
       const pdfUrl = UrlUtil.urlToHttps(pdfIframe.src)
       await ZoteroUtil.attachRemotePDFToItem(pdfUrl, item)
-    } else if (xhr.status === HttpCodes.DONE && body.innerText.match(/Please try to search again using DOI/im) !== null) {
+    } else if (xhr.status === HttpCodes.DONE && body?.innerText?.match(/Please try to search again using DOI/im)) {
       Zotero.debug(`scihub: PDF is not available at the moment "${scihubUrl}"`)
       throw new PdfNotFoundError(`Pdf is not available: ${scihubUrl}`)
     } else {
@@ -116,11 +124,12 @@ class CScihub {
     const doiField = item.getField('DOI')
     const doiFromExtra = this.getDoiFromExtra(item)
     const doiFromUrl = this.getDoiFromUrl(item)
-    const doi = doiField || doiFromExtra || doiFromUrl
+    const doi = doiField ?? doiFromExtra ?? doiFromUrl
 
     if (doi && (typeof doi === 'string') && doi.length > 0) {
       return doi
     }
+    return null
   }
 
   private getDoiFromExtra(item: ZoteroItem): string | null {
@@ -131,6 +140,7 @@ class CScihub {
     if (match) {
       return match[1] as string
     }
+    return null
   }
 
   private getDoiFromUrl(item: ZoteroItem): string | null {
@@ -141,6 +151,7 @@ class CScihub {
       const doiPath = new URL(url).pathname
       return decodeURIComponent(doiPath).replace(/^\//, '')
     }
+    return null
   }
 
   private generateScihubItemUrl(item: ZoteroItem): URL | null {
@@ -149,6 +160,7 @@ class CScihub {
       const baseUrl = this.getBaseScihubUrl()
       return new URL(doi, baseUrl)
     }
+    return null
   }
 }
 

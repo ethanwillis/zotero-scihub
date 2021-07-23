@@ -1,12 +1,16 @@
 interface IZoteroPane {
   canEdit: () => boolean
   displayCannotEditLibraryMessage: () => void
-  getSelectedCollection: (asID: boolean) => IZotero['Collection'] | null
+  getSelectedCollection: (asID: boolean) => ZoteroCollection | null
   getSelectedItems: () => [ZoteroItem]
 }
 
 interface ZoteroCollection {
   getChildItems: (asIDs: boolean, includeDeleted: boolean) => [ZoteroItem]
+}
+
+interface ZoteroObserver {
+  notify: (event: string, type: string, ids: [number], extraData: Record<string, any>) => Promise<void>
 }
 
 interface ZoteroItem {
@@ -26,7 +30,7 @@ interface IZotero {
   launchURL: (url: string) => void
 
   Notifier: {
-    registerObserver: (onserver: any, types: string[], id: string, priority?: number) => number // any => ZoteroObserver
+    registerObserver: (observer: ZoteroObserver, types: string[], id: string, priority?: number) => number // any => ZoteroObserver
     unregisterObserver: (id: number) => void
   }
 
@@ -49,7 +53,7 @@ interface IZotero {
   }
 
   Attachments: {
-    importFromURL: (options: object) => Promise<ZoteroItem>
+    importFromURL: (options: Record<string, any>) => Promise<ZoteroItem>
   }
 
   Libraries: {
@@ -62,7 +66,7 @@ interface IZotero {
     new(): {
       changeHeadline: (headline: string, icon?: string, postText?: string) => void
       addDescription: (body: string) => void
-      startCloseTimer: (milis: number) => void
+      startCloseTimer: (millis: number) => void
       show: () => void
     }
   }
@@ -70,5 +74,4 @@ interface IZotero {
   Collection: ZoteroCollection
 }
 
-declare const ZoteroPane: IZoteroPane
-declare const Zotero: IZotero
+export { ZoteroItem, ZoteroObserver, IZotero, IZoteroPane }

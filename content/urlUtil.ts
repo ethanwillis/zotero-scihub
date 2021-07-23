@@ -7,7 +7,7 @@ export abstract class UrlUtil {
     return safeUrl
   }
 
-  public static extractFileNameFromUrl(url: URL): string {
+  public static extractFileNameFromUrl(url: URL): string | undefined {
     // Keeps the last token of the pathname supposing it is filename, eg
     // https://example.com/path/<filename.pdf>?params
     return url.pathname.split('/').pop()
