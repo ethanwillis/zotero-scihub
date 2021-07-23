@@ -1,6 +1,7 @@
-content zoteroscihub chrome/content/
-skin zoteroscihub default	chrome/skin/default/zoteroscihub/
-locale zoteroscihub en-US chrome/locale/en-US/
+content zotero-scihub content/
+skin zotero-scihub default	skin/default/
+locale zotero-scihub en-US locale/en-US/
 
-overlay chrome://zotero/content/zoteroPane.xul chrome://zoteroscihub/content/overlay.xul
-overlay chrome://zotero/content/preferences/preferences.xul chrome://zoteroscihub/content/preferences.xul
+overlay chrome://zotero/content/itemPane.xul chrome://zotero-scihub/content/itemPane.xul
+overlay chrome://zotero/content/zoteroPane.xul chrome://zotero-scihub/content/toolsPane.xul
+overlay chrome://zotero/content/preferences/preferences.xul chrome://zotero-scihub/content/prefPane.xul

@@ -1,0 +1,47 @@
+{
+  "name": "zotero-scihub",
+  "version": "0.1.1",
+  "description": "Download papers and books by DOI from Sci-Hub",
+  "scripts": {
+    "lint": "tslint -t stylish --project .",
+    "prebuild": "npm run lint",
+    "build": "webpack",
+    "postbuild": "zotero-plugin-zipup build zotero-scihub",
+    "release": "zotero-plugin-release",
+    "postversion": "git push --follow-tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ethanwillis/zotero-scihub.git"
+  },
+  "author": {
+    "name": "ethanwillis",
+    "email": "example@example.com"
+  },
+  "bugs": {
+    "url": "https://github.com/ethanwillis/zotero-scihub/issues"
+  },
+  "homepage": "https://github.com/ethanwillis/zotero-scihub",
+  "dependencies": {},
+  "xpi": {
+    "name": "Sci-Hub Plugin for Zotero",
+    "updateLink": "https://github.com/ethanwillis/zotero-scihub/releases/download/v{version}/zotero-scihub-{version}.xpi",
+    "releaseURL": "https://github.com/ethanwillis/zotero-scihub/releases/download/release/",
+    "iconURL": "chrome://zotero-scihub/skin/sci-hub-logo.svg"
+  },
+  "devDependencies": {
+    "@types/node": "^13.1.4",
+    "bluebird": "^3.7.2",
+    "circular-dependency-plugin": "^5.2.0",
+    "post-compile-webpack-plugin": "^0.1.2",
+    "rimraf": "^3.0.0",
+    "ts-loader": "^6.2.1",
+    "ts-node": "^8.5.4",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.4",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "zotero-plugin": "0.0.96"
+  }
+}
+

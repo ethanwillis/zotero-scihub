@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE window
-          SYSTEM "chrome://zoteroscihub/locale/overlay.dtd">
+          SYSTEM "chrome://zotero-scihub/locale/prefPane.dtd">
 
 <overlay id="zoteroscihub-preferences"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
@@ -9,9 +9,9 @@
     <prefwindow id="zotero-prefs">
         <prefpane id="zotero-prefpane-zoteroscihub"
                   insertafter="zotero-prefpane-advanced"
-                  label="Zotero Scihub"
-                  image="chrome://zoteroscihub/skin/sci-hub-square.svg"
-                  onpaneload="initPreferences();">
+                  label="&zotero.scihub.title;"
+                  image="chrome://zotero-scihub/skin/sci-hub-logo.svg"
+                  onpaneload="Zotero.Scihub.PrefPane.initPreferences();">
             <preferences id="zotero-preferences-zoteroscihub">
                 <preference id="pref-zoteroscihub-automatic-pdf-download"
                             name="extensions.zotero.zoteroscihub.automatic_pdf_download"
@@ -28,13 +28,13 @@
                     </columns>
                     <rows>
                         <row>
-                            <label value="Automatic PDF Download" />
+                            <label value="&zotero.scihub.automatic_pdf_download;" />
                             <checkbox id="id-zoteroscihub-automatic-pdf-download"
                                       preference="pref-zoteroscihub-automatic-pdf-download" />
                         </row>
                         <row>
                             <label
-                                   value="Scihub URL: (Note https only works with sci-hub.tw due to invalid SSL certs on mirrors)" />
+                                   value="&zotero.scihub.scihub_url;" />
                             <textbox id="id-zoteroscihub-scihub-url"
                                      preference="pref-zoteroscihub-scihub-url" />
                         </row>
@@ -45,6 +45,8 @@
     </prefwindow>
 
     <!-- Include the main extension logic -->
-    <script src="chrome://zoteroscihub/content/scripts/preferences.js" />
-
+  <script src="chrome://zotero/content/include.js"/>
+  <script src="chrome://zotero-scihub/content/webpack.js"/>
+  <script src="chrome://zotero-scihub/content/Scihub.js"/>
+  <script src="chrome://zotero-scihub/content/Scihub.PrefPane.js"/>
 </overlay>

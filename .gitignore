@@ -1,0 +1,6 @@
+node_modules/
+build/
+gen/
+xpi/
+.DS_Store
+.vscode
