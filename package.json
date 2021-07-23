@@ -1,6 +1,6 @@
 {
   "name": "zotero-scihub",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Download papers and books by DOI from Sci-Hub",
   "scripts": {
     "lint": "tslint -t stylish --project .",
