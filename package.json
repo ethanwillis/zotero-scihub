@@ -22,7 +22,6 @@
     "url": "https://github.com/ethanwillis/zotero-scihub/issues"
   },
   "homepage": "https://github.com/ethanwillis/zotero-scihub",
-  "dependencies": {},
   "xpi": {
     "name": "Sci-Hub Plugin for Zotero",
     "updateLink": "https://github.com/ethanwillis/zotero-scihub/releases/download/v{version}/zotero-scihub-{version}.xpi",
@@ -41,7 +40,7 @@
     "typescript": "^3.7.4",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
-    "zotero-plugin": "0.0.96"
+    "zotero-plugin": "^1.0.55"
   }
 }
 

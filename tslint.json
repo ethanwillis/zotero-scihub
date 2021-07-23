@@ -1,5 +1,4 @@
 {
-    "extends": "zotero-plugin/tslint.json",
     "rules": {
       "interface-name": false,
       "member-ordering": false
