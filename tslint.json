@@ -1,6 +1,0 @@
-{
-    "rules": {
-      "interface-name": false,
-      "member-ordering": false
-    }
-}

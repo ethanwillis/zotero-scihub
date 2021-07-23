@@ -1,5 +1,3 @@
-declare const Zotero: IZotero
-
 export = new class {
   public initPreferences() {
     const automaticPdfDownloadCheckbox = document.getElementById('id-zoteroscihub-automatic-pdf-download') as HTMLInputElement

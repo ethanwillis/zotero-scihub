@@ -1,8 +1,5 @@
-declare const Zotero: IZotero
-declare const ZoteroPane: IZoteroPane
-
 export = new class {
-  public async updateSelectedEntity(libraryId) {
+  public async updateSelectedEntity(libraryId: string) {
     Zotero.debug(`scihub: updating items in entity ${libraryId}`)
     if (!ZoteroPane.canEdit()) {
       ZoteroPane.displayCannotEditLibraryMessage()

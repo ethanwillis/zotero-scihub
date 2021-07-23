@@ -1,9 +1,7 @@
 import { UrlUtil } from './urlUtil'
 
-declare const Zotero: IZotero
-
 export abstract class ZoteroUtil {
-  public static async attachRemotePDFToItem(pdfUrl: URL, item: IZotero['Item']) {
+  public static async attachRemotePDFToItem(pdfUrl: URL, item: ZoteroItem): Promise<void> {
     const filename = UrlUtil.extractFileNameFromUrl(pdfUrl)
 
     // Download PDF and add as attachment
@@ -23,7 +21,8 @@ export abstract class ZoteroUtil {
     Zotero.debug(`Import result: ${JSON.stringify(result)}`)
   }
 
-  public static showPopup(title: string, body: string, isError = false, timeout = 5) {
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+  public static showPopup(title: string, body: string, isError = false, timeout = 5): void {
     // Shows user-friendly Zotero popup
     const seconds = 1000
     const pw = new Zotero.ProgressWindow()

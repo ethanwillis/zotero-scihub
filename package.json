@@ -3,9 +3,9 @@
   "version": "1.0.1",
   "description": "Download papers and books by DOI from Sci-Hub",
   "scripts": {
-    "lint": "tslint -t stylish --project .",
+    "lint": "eslint . --ext .ts --cache --cache-location .eslintcache/",
     "prebuild": "npm run lint",
-    "build": "webpack",
+    "build": "tsc --noEmit && node esbuild.js",
     "postbuild": "zotero-plugin-zipup build zotero-scihub",
     "release": "zotero-plugin-release",
     "postversion": "git push --follow-tags"
@@ -28,18 +28,20 @@
     "releaseURL": "https://github.com/andrusha/zotero-scihub/releases/download/release/",
     "iconURL": "chrome://zotero-scihub/skin/sci-hub-logo.svg"
   },
-  "devDependencies": {
-    "@types/node": "^13.1.4",
-    "bluebird": "^3.7.2",
-    "circular-dependency-plugin": "^5.2.0",
-    "post-compile-webpack-plugin": "^0.1.2",
-    "rimraf": "^3.0.0",
-    "ts-loader": "^6.2.1",
-    "ts-node": "^8.5.4",
-    "tslint": "^5.20.1",
-    "typescript": "^3.7.4",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10",
+  "dependencies": {
+    "@types/mocha": "^8.2.3",
+    "@types/node": "^16.4.1",
+    "@typescript-eslint/eslint-plugin": "^4.28.3",
+    "@typescript-eslint/parser": "^4.28.3",
+    "esbuild": "^0.12.15",
+    "eslint": "^7.30.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jsdoc": "^35.4.3",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "mkdirp": "^1.0.4",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5",
     "zotero-plugin": "^1.0.55"
   }
 }

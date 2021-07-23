@@ -1,5 +1,3 @@
-declare const Zotero: IZotero
-
 export = new class {
   public async updateAll() {
     Zotero.debug('scihub: updating all items')
@@ -10,7 +8,7 @@ export = new class {
       const libraryId = item.getField('libraryID')
       return item.isRegularItem() && !item.isCollection() &&
         (libraryId == null || libraryId === '' || Zotero.Libraries.isEditable(libraryId))
-    }) as [IZotero['Item']]
+    }) as [ZoteroItem]
 
     await Zotero.Scihub.updateItems(items)
   }
