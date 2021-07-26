@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-node@v2.3.0
         with:
           node-version: 16.x
+
       - name: Cache node dependencies
         uses: actions/cache@v2
         env:
@@ -31,11 +32,15 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+
       - name: Install dependencies
         run: npm install
+
       - name: Build
         run: npm run build
       - name: Release
-        run: npm run release
+        run: |
+          echo GITHUB_ACTIONS=$GITHUB_ACTIONS GITHUB_RUN_NUMBER=$GITHUB_RUN_NUMBER GITHUB_REF=$GITHUB_REF GITHUB_SHA=$GITHUB_SHA GITHUB_EVENT_NAME=$GITHUB_EVENT_NAME
+          npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
