@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "importHelpers": true,
+    "target": "es2017",
+    "disableSizeLimit": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "removeComments": false,
+    "preserveConstEnums": false,
+    "sourceMap": false,
+    "downlevelIteration": true,
+      "strict": true,
+      "noImplicitReturns": true,
+      "noImplicitAny": false,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+    "lib": [ "es2017", "dom" ],
+    "typeRoots": [
+      "./typings",
+      "./node_modules/@types"
+    ]
+  },
+  "include": [
+    "content/**/*",
+    "resource/**/*",
+    "*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "typings/*"
+  ]
+}

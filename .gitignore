@@ -1,0 +1,17 @@
+wiki
+gen
+build
+*~
+*.swp
+*.debug
+*.cache
+*.status
+*.js.map
+*.tmp
+*.xpi
+xpi
+node_modules
+.env
+.DS_Store
+.vscode
+.eslintcache
