@@ -1,7 +1,7 @@
 import type { ZoteroItem, IZotero, ZoteroObserver } from '../typings/zotero'
-import { CItemPane } from './itemPane'
-import { CToolsPane } from './toolsPane'
-import { CPrefPane } from './prefPane'
+import { ItemPane } from './itemPane'
+import { ToolsPane } from './toolsPane'
+import { PrefPane } from './prefPane'
 import { UrlUtil } from './urlUtil'
 import { ZoteroUtil } from './zoteroUtil'
 
@@ -31,25 +31,25 @@ class ItemObserver implements ZoteroObserver {
   }
 }
 
-class CScihub {
+class Scihub {
   // TOOD: only bulk-update items which are missing paper attachement
   private static readonly DEFAULT_SCIHUB_URL = 'https://sci-hub.tf/'
   private static readonly DEFAULT_AUTOMATIC_PDF_DOWNLOAD = true
   private observerId: number | null = null
   private initialized = false
-  public ItemPane: CItemPane
-  public PrefPane: CPrefPane
-  public ToolsPane: CToolsPane
+  public ItemPane: ItemPane
+  public PrefPane: PrefPane
+  public ToolsPane: ToolsPane
 
   constructor() {
-    this.ItemPane = new CItemPane()
-    this.PrefPane = new CPrefPane()
-    this.ToolsPane = new CToolsPane()
+    this.ItemPane = new ItemPane()
+    this.PrefPane = new PrefPane()
+    this.ToolsPane = new ToolsPane()
   }
 
   public getBaseScihubUrl(): string {
     if (Zotero.Prefs.get('zoteroscihub.scihub_url') === undefined) {
-      Zotero.Prefs.set('zoteroscihub.scihub_url', CScihub.DEFAULT_SCIHUB_URL)
+      Zotero.Prefs.set('zoteroscihub.scihub_url', Scihub.DEFAULT_SCIHUB_URL)
     }
 
     return Zotero.Prefs.get('zoteroscihub.scihub_url') as string
@@ -57,7 +57,7 @@ class CScihub {
 
   public isAutomaticPdfDownload(): boolean {
     if (Zotero.Prefs.get('zoteroscihub.automatic_pdf_download') === undefined) {
-      Zotero.Prefs.set('zoteroscihub.automatic_pdf_download', CScihub.DEFAULT_AUTOMATIC_PDF_DOWNLOAD)
+      Zotero.Prefs.set('zoteroscihub.automatic_pdf_download', Scihub.DEFAULT_AUTOMATIC_PDF_DOWNLOAD)
     }
 
     return Zotero.Prefs.get('zoteroscihub.automatic_pdf_download') as boolean
@@ -176,7 +176,7 @@ class CScihub {
   }
 }
 
-Zotero.Scihub = new CScihub()
+Zotero.Scihub = new Scihub()
 
 window.addEventListener('load', _ => {
   Zotero.Scihub.load()
@@ -186,4 +186,4 @@ window.addEventListener('unload', _ => {
 }, false)
 
 
-export { CScihub }
+export { Scihub }

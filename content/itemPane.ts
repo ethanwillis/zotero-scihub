@@ -2,7 +2,7 @@ import type { IZotero, IZoteroPane } from '../typings/zotero'
 declare const ZoteroPane: IZoteroPane
 declare const Zotero: IZotero
 
-class CItemPane {
+class ItemPane {
   public async updateSelectedEntity(libraryId: string): Promise<void> {
     Zotero.debug(`scihub: updating items in entity ${libraryId}`)
     if (!ZoteroPane.canEdit()) {
@@ -24,4 +24,4 @@ class CItemPane {
   }
 }
 
-export { CItemPane }
+export { ItemPane }

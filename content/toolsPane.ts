@@ -2,7 +2,7 @@ import type { ZoteroItem, IZotero } from '../typings/zotero'
 
 declare const Zotero: IZotero
 
-class CToolsPane {
+class ToolsPane {
   public async updateAll(): Promise<void> {
     Zotero.debug('scihub: updating all items')
 
@@ -19,4 +19,4 @@ class CToolsPane {
   }
 }
 
-export { CToolsPane }
+export { ToolsPane }

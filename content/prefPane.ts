@@ -1,7 +1,7 @@
 import type { IZotero } from '../typings/zotero'
 declare const Zotero: IZotero
 
-class CPrefPane {
+class PrefPane {
   public initPreferences(): void {
     const automaticPdfDownloadCheckbox = document.getElementById('id-zoteroscihub-automatic-pdf-download') as HTMLInputElement
     automaticPdfDownloadCheckbox.checked = Zotero.Scihub.isAutomaticPdfDownload()
@@ -11,4 +11,4 @@ class CPrefPane {
   }
 }
 
-export { CPrefPane }
+export { PrefPane }

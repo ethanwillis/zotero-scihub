@@ -23,7 +23,7 @@ interface ZoteroItem {
 }
 
 interface IZotero {
-  Scihub: import('../content/scihub').CScihub
+  Scihub: import('../content/scihub').Scihub
 
   debug: (msg: string) => void
   logError: (err: Error | string) => void
