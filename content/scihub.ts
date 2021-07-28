@@ -1,4 +1,7 @@
 import type { ZoteroItem, IZotero, ZoteroObserver } from '../typings/zotero'
+import { CItemPane } from './itemPane'
+import { CToolsPane } from './toolsPane'
+import { CPrefPane } from './prefPane'
 import { UrlUtil } from './urlUtil'
 import { ZoteroUtil } from './zoteroUtil'
 
@@ -34,6 +37,15 @@ class CScihub {
   private static readonly DEFAULT_AUTOMATIC_PDF_DOWNLOAD = true
   private observerId: number | null = null
   private initialized = false
+  public ItemPane: CItemPane
+  public PrefPane: CPrefPane
+  public ToolsPane: CToolsPane
+
+  constructor() {
+    this.ItemPane = new CItemPane()
+    this.PrefPane = new CPrefPane()
+    this.ToolsPane = new CToolsPane()
+  }
 
   public getBaseScihubUrl(): string {
     if (Zotero.Prefs.get('zoteroscihub.scihub_url') === undefined) {

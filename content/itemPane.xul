@@ -26,6 +26,5 @@
 
   <script src="chrome://zotero/content/include.js"/>
   <script src="chrome://zotero-scihub/content/webpack.js"/>
-  <script src="chrome://zotero-scihub/content/Scihub.js"/>
-  <script src="chrome://zotero-scihub/content/Scihub.ItemPane.js"/>
+  <script src="chrome://zotero-scihub/content/scihub.js"/>
 </overlay>
