@@ -12,20 +12,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/andrusha/zotero-scihub.git"
+    "url": "https://github.com/ethanwillis/zotero-scihub.git"
   },
   "author": {
-    "name": "andrusha",
+    "name": "ethanwillis",
     "email": "example@example.com"
   },
   "bugs": {
-    "url": "https://github.com/andrusha/zotero-scihub/issues"
+    "url": "https://github.com/ethanwillis/zotero-scihub/issues"
   },
-  "homepage": "https://github.com/andrusha/zotero-scihub",
+  "homepage": "https://github.com/ethanwillis/zotero-scihub",
   "xpi": {
     "name": "Sci-Hub Plugin for Zotero",
-    "updateLink": "https://github.com/andrusha/zotero-scihub/releases/download/v{version}/zotero-scihub-{version}.xpi",
-    "releaseURL": "https://github.com/andrusha/zotero-scihub/releases/download/release/",
+    "updateLink": "https://github.com/ethanwillis/zotero-scihub/releases/download/v{version}/zotero-scihub-{version}.xpi",
+    "releaseURL": "https://github.com/ethanwillis/zotero-scihub/releases/download/release/",
     "iconURL": "chrome://zotero-scihub/skin/sci-hub-logo.svg"
   },
   "dependencies": {

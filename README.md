@@ -6,7 +6,7 @@ This is an add-on for [Zotero](https://www.zotero.org/) that enables automatic d
 
 #### Install
 
-- Download the latest release (.xpi file) from the [Releases Page](https://github.com/andrusha/zotero-scihub/releases)
+- Download the latest release (.xpi file) from the [Releases Page](https://github.com/ethanwillis/zotero-scihub/releases)
   _Note_ If you're using Firefox as your browser, right click the xpi and select "Save As.."
 - In Zotero click "Tools" in the top menu bar and then click "Addons"
 - Go to the Extensions page and then click the gear icon in the top right.
