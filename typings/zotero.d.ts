@@ -14,12 +14,18 @@ interface ZoteroObserver {
 }
 
 interface ZoteroItem {
-  new(): {}
   id: string
   libraryID: string
   getField: (field: string, unformatted?: boolean, includeBaseMapped?: boolean) => string
   isRegularItem: () => boolean
   isCollection: () => boolean
+}
+
+interface ProgressWindow {
+  changeHeadline: (headline: string, icon?: string, postText?: string) => void
+  addDescription: (body: string) => void
+  startCloseTimer: (millis: number) => void
+  show: () => void
 }
 
 interface IZotero {
@@ -35,19 +41,19 @@ interface IZotero {
   }
 
   Prefs: {
-    get: (pref: string) => any
+    get: (pref: string) => string | number | boolean
     set: (pref: string, value: string | number | boolean) => any
   }
 
   Items: {
     getAsync: (ids: number | number[]) => Promise<any | any[]>
-    getAll: () => Promise<[ZoteroItem]>
+    getAll: () => Promise<ZoteroItem[]>
   }
 
   HTTP: {
     request: (method: string, url: string, options?: {
       body?: string,
-      responseType?: string,
+      responseType?: XMLHttpRequestResponseType,
       headers?: Record<string, string>,
     }) => Promise<XMLHttpRequest>
   }
@@ -60,18 +66,9 @@ interface IZotero {
     isEditable: (libraryId: string) => boolean
   }
 
-  Item: ZoteroItem
-
   ProgressWindow: {
-    new(): {
-      changeHeadline: (headline: string, icon?: string, postText?: string) => void
-      addDescription: (body: string) => void
-      startCloseTimer: (millis: number) => void
-      show: () => void
-    }
+    new(): ProgressWindow
   }
-
-  Collection: ZoteroCollection
 }
 
-export { ZoteroItem, ZoteroObserver, IZotero, IZoteroPane }
+export { ZoteroItem, ZoteroObserver, IZotero, IZoteroPane, ProgressWindow }

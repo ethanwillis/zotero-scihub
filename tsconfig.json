@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "removeComments": false,
     "preserveConstEnums": false,
-    "sourceMap": false,
+    "sourceMap": true,
     "downlevelIteration": true,
       "strict": true,
       "noImplicitReturns": true,
@@ -23,11 +23,11 @@
   "include": [
     "content/**/*",
     "resource/**/*",
+    "tests/**/*",
     "*.ts"
   ],
   "exclude": [
     "node_modules",
-    "**/*.spec.ts",
     "typings/*"
   ]
 }
