@@ -6,6 +6,7 @@ import { UrlUtil } from './urlUtil'
 import { ZoteroUtil } from './zoteroUtil'
 
 declare const Zotero: IZotero
+declare const window
 
 enum HttpCodes {
   DONE = 200,
@@ -76,7 +77,7 @@ class Scihub {
     }
   }
 
-  public async updateItems(items: [ZoteroItem]): Promise<void> {
+  public async updateItems(items: ZoteroItem[]): Promise<void> {
     // WARN: Sequentially go through items, parallel will fail due to rate-limiting
     // Cycle needs to be broken if scihub asks for Captcha,
     // then user have to be redirected to the page to fill it in
@@ -117,13 +118,13 @@ class Scihub {
     ZoteroUtil.showPopup('Fetching PDF', item.getField('title'))
 
     const xhr = await Zotero.HTTP.request('GET', scihubUrl.href, { responseType: 'document' })
-    const pdfIframe = xhr.responseXML?.querySelector('iframe#pdf') as HTMLIFrameElement
+    const pdfUrl = xhr.responseXML?.querySelector('iframe#pdf')?.getAttribute('src')
     const body = xhr.responseXML?.querySelector('body')
 
-    if (xhr.status === HttpCodes.DONE && pdfIframe) {
-      const pdfUrl = UrlUtil.urlToHttps(pdfIframe.src)
-      await ZoteroUtil.attachRemotePDFToItem(pdfUrl, item)
-    } else if (xhr.status === HttpCodes.DONE && body?.innerText?.match(/Please try to search again using DOI/im)) {
+    if (xhr.status === HttpCodes.DONE && pdfUrl) {
+      const httpsUrl = UrlUtil.urlToHttps(pdfUrl)
+      await ZoteroUtil.attachRemotePDFToItem(httpsUrl, item)
+    } else if (xhr.status === HttpCodes.DONE && body?.innerHTML?.match(/Please try to search again using DOI/im)) {
       Zotero.debug(`scihub: PDF is not available at the moment "${scihubUrl}"`)
       throw new PdfNotFoundError(`Pdf is not available: ${scihubUrl}`)
     } else {
@@ -148,7 +149,7 @@ class Scihub {
     // For books "extra" field might contain DOI instead
     // values in extra are <key>: <value> separated by newline
     const extra = item.getField('extra')
-    const match = extra.match(/^DOI: (.+)$/m)
+    const match = extra?.match(/^DOI: (.+)$/m)
     if (match) {
       return match[1] as string
     }
@@ -158,7 +159,7 @@ class Scihub {
   private getDoiFromUrl(item: ZoteroItem): string | null {
     // If item was added by the doi.org url it can be extracted from its pathname
     const url = item.getField('url')
-    const isDoiOrg = url.match(/\bdoi\.org\b/i)
+    const isDoiOrg = url?.match(/\bdoi\.org\b/i)
     if (isDoiOrg) {
       const doiPath = new URL(url).pathname
       return decodeURIComponent(doiPath).replace(/^\//, '')
@@ -178,12 +179,14 @@ class Scihub {
 
 Zotero.Scihub = new Scihub()
 
-window.addEventListener('load', _ => {
-  Zotero.Scihub.load()
-}, false)
-window.addEventListener('unload', _ => {
-  Zotero.Scihub.unload()
-}, false)
-
+// Check fails in testing environment
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', _ => {
+    Zotero.Scihub.load()
+  }, false)
+  window.addEventListener('unload', _ => {
+    Zotero.Scihub.unload()
+  }, false)
+}
 
 export { Scihub }

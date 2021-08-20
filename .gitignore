@@ -15,3 +15,5 @@ node_modules
 .DS_Store
 .vscode
 .eslintcache
+coverage
+.nyc_output

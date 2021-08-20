@@ -291,7 +291,7 @@
     "no-new-func": "off"
   },
   "ignorePatterns": [
-    "webpack.config.ts",
+    "esbuild.js",
     "util/*.ts",
     "minitests/*.ts",
     "content/minitests/*.ts"
