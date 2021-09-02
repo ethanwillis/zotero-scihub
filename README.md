@@ -1,6 +1,6 @@
 # Zotero Scihub
 
-This is an add-on for [Zotero](https://www.zotero.org/) that enables automatic download of PDFs for items with a DOI.
+This is an add-on for [Zotero](https://www.zotero.org/) and [Juris-M](https://juris-m.github.io/) that enables automatic download of PDFs for items with a DOI.
 
 # Quick Start Guide
 
