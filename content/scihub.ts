@@ -124,7 +124,7 @@ class Scihub {
     if (xhr.status === HttpCodes.DONE && pdfUrl) {
       const httpsUrl = UrlUtil.urlToHttps(pdfUrl)
       await ZoteroUtil.attachRemotePDFToItem(httpsUrl, item)
-    } else if (xhr.status === HttpCodes.DONE && body?.innerHTML?.match(/Please try to search again using DOI/im)) {
+    } else if (xhr.status === HttpCodes.DONE && body?.innerHTML === '') {
       Zotero.debug(`scihub: PDF is not available at the moment "${scihubUrl}"`)
       throw new PdfNotFoundError(`Pdf is not available: ${scihubUrl}`)
     } else {
