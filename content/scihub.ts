@@ -118,7 +118,7 @@ class Scihub {
     ZoteroUtil.showPopup('Fetching PDF', item.getField('title'))
 
     const xhr = await Zotero.HTTP.request('GET', scihubUrl.href, { responseType: 'document' })
-    const pdfUrl = xhr.responseXML?.querySelector('iframe#pdf')?.getAttribute('src')
+    const pdfUrl = xhr.responseXML?.querySelector('#pdf')?.getAttribute('src')
     const body = xhr.responseXML?.querySelector('body')
 
     if (xhr.status === HttpCodes.DONE && pdfUrl) {
