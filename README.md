@@ -48,6 +48,12 @@ _Preferences > Advanced > Config Editor_
 1. Install dependencies `npm install`
 2. Build `npm run build`
 
+## Contribution
+
+0. This repo uses automated testing, run it with `npm run test`
+1. Test change manually
+2. Open PR, provide brief decsription of the change and the way to test it
+
 ## Disclaimer
 
 Use this code at your own peril. No warranties are provided. Keep the laws of your locality in mind!
