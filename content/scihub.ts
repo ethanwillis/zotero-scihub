@@ -34,7 +34,7 @@ class ItemObserver implements ZoteroObserver {
 
 class Scihub {
   // TOOD: only bulk-update items which are missing paper attachement
-  private static readonly DEFAULT_SCIHUB_URL = 'https://sci-hub.tf/'
+  private static readonly DEFAULT_SCIHUB_URL = 'https://sci-hub.st/'
   private static readonly DEFAULT_AUTOMATIC_PDF_DOWNLOAD = true
   private observerId: number | null = null
   private initialized = false
