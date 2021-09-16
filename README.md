@@ -1,6 +1,6 @@
 # Zotero Scihub
 
-This is an add-on for [Zotero](https://www.zotero.org/) that enables automatic download of PDFs for items with a DOI.
+This is an add-on for [Zotero](https://www.zotero.org/) and [Juris-M](https://juris-m.github.io/) that enables automatic download of PDFs for items with a DOI.
 
 # Quick Start Guide
 
@@ -27,18 +27,32 @@ automatically downloaded.
 
 #### Configuration
 
-There are two parameters that can be edited, to do so go to the configuration editor
+Plugin is configured through the dedicated tab: 
 
-_Preferences > Advanced > General > Config Editor (button near the bottom of the window)_
+<img width="782" alt="Screenshot 2021-08-21 at 22 14 04" src="https://user-images.githubusercontent.com/387791/130333778-8bfb0878-2122-49a9-bc23-c528eb9b6cbf.png">
 
-- `extensions.zotero.zoteroscihub.automatic_pdf_download` (default `true`) - automatically download pdfs from scihub when entries are added to zotero
-- `extensions.zotero.zoteroscihub.scihub_url` (default `https://sci-hub.tf`) - url to try to get pdfs from!
+#### DNS-over-HTTPS
+
+In case of malfunctioning or unsafe local DNS server, Zotero (as it's built on Firefox) might be configured with [Trusted Recursive Resolver](https://wiki.mozilla.org/Trusted_Recursive_Resolver) or DNS-over-HTTPS, where you could set your own DNS server just for Zotero without modifying network settings.
+
+_Preferences > Advanced > Config Editor_
+
+1. set `network.trr.mode` to `2` or `3`, this enables DNS-over-HTTPS (2 enables it with fallback)
+2. set `network.trr.uri` to `https://cloudflare-dns.com/dns-query`, this is the provider’s URL
+3. set `network.trr.bootstrapAddress` to `1.1.1.1`, this is cloudflare’s normal DNS server (only) used to retrieve the IP of cloudfaire-dns.com
+4. Restart zotero, wait for a DNS cache to clean up.
 
 ## Building
 
 0. Pre-requisite is to have [node.js](nodejs.org) installed
 1. Install dependencies `npm install`
 2. Build `npm run build`
+
+## Contribution
+
+0. This repo uses automated testing, run it with `npm run test`
+1. Test change manually
+2. Open PR, provide brief decsription of the change and the way to test it
 
 ## Disclaimer
 
