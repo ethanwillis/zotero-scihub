@@ -8,7 +8,7 @@ import { JSDOM } from 'jsdom'
 globalThis.DOMParser = new JSDOM().window.DOMParser
 
 import { Zotero, progressWindowSpy } from './zotero.mock'
-import { collectionItem, itemWithoutDOI, regularItem1, regularItem2, DOIinExtraItem, DOIinUrlItem, captchaItem } from './zoteroItem.mock'
+import { collectionItem, itemWithoutDOI, regularItem1, regularItem2, DOIinExtraItem, DOIinUrlItem, captchaItem, unavailableItem } from './zoteroItem.mock'
 globalThis.Zotero = Zotero
 // Since there is catch-all in the code which raises alerts
 globalThis.alert = m => { throw new Error(m) }
@@ -37,15 +37,19 @@ describe('Scihub test', () => {
       ])
       server.respondWith('GET', 'https://sci-hub.st/10.1080/00224490902775827', [
         200, { 'Content-Type': 'application/xml' },
-        '<html><body><iframe id="pdf" src="http://example.com/doi_in_url_item.pdf" /></body></html>',
+        '<html><body><embed id="pdf" src="http://example.com/doi_in_url_item.pdf"></embed></body></html>',
       ])
       server.respondWith('GET', 'https://sci-hub.st/captcha', [
         200, { 'Content-Type': 'application/xml' },
         '<html><body>Captcha is required</body></html>',
       ])
+      server.respondWith('GET', 'https://sci-hub.st/42.0/69', [
+        200, { 'Content-Type': 'application/xml' },
+        '<html><body>Please try to search again using DOI</body></html>',
+      ])
       server.respondWith([
         200, { 'Content-Type': 'application/xml' },
-        '<html><body>Please try to search again using DOI</body></html>'])
+        '   '])
     })
 
     afterEach(() => {
@@ -90,6 +94,14 @@ describe('Scihub test', () => {
     it('unavailable item shows popup and continues execution', async () => {
       // regularItem2 has no PDF available
       await Zotero.Scihub.updateItems([regularItem2, regularItem1])
+
+      expect(progressWindowSpy.calledWith('Error')).to.be.true
+      expect(attachmentSpy.calledOnce).to.be.true
+    })
+
+    it('unavailable item with rich error message shows popup and continues execution', async () => {
+      // unavailableItem has no PDF available, but reports different error
+      await Zotero.Scihub.updateItems([unavailableItem, regularItem1])
 
       expect(progressWindowSpy.calledWith('Error')).to.be.true
       expect(attachmentSpy.calledOnce).to.be.true

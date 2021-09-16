@@ -118,19 +118,30 @@ class Scihub {
     ZoteroUtil.showPopup('Fetching PDF', item.getField('title'))
 
     const xhr = await Zotero.HTTP.request('GET', scihubUrl.href, { responseType: 'document' })
+    // older .tf domains have iframe element, newer .st domain have embed element
     const pdfUrl = xhr.responseXML?.querySelector('#pdf')?.getAttribute('src')
     const body = xhr.responseXML?.querySelector('body')
 
     if (xhr.status === HttpCodes.DONE && pdfUrl) {
       const httpsUrl = UrlUtil.urlToHttps(pdfUrl)
       await ZoteroUtil.attachRemotePDFToItem(httpsUrl, item)
-    } else if (xhr.status === HttpCodes.DONE && body?.innerHTML === '') {
+    } else if (xhr.status === HttpCodes.DONE && this.isPdfNotAvailable(body)) {
       Zotero.debug(`scihub: PDF is not available at the moment "${scihubUrl}"`)
       throw new PdfNotFoundError(`Pdf is not available: ${scihubUrl}`)
     } else {
       Zotero.debug(`scihub: failed to fetch PDF from "${scihubUrl}"`)
       throw new Error(xhr.statusText)
     }
+  }
+
+  private isPdfNotAvailable(body: HTMLBodyElement | null | undefined): boolean {
+    const innerHTML = body?.innerHTML
+    // older .tf domain return rich error message
+    // newer .st domains return empty page if pdf is not available
+    if (!innerHTML || innerHTML?.trim() === '' || innerHTML?.match(/Please try to search again using DOI/im)) {
+      return true
+    }
+    return false
   }
 
   private getDoi(item: ZoteroItem): string | null {

@@ -109,4 +109,19 @@ const captchaItem: ZoteroItem = new class {
   }
 }
 
-export { regularItem1, regularItem2, collectionItem, itemWithoutDOI, DOIinExtraItem, DOIinUrlItem, captchaItem }
+const unavailableItem: ZoteroItem = new class {
+  public isRegularItem() { return true }
+  public isCollection() { return false }
+  public libraryID = 'unavailableItemLibraryID2'
+  public id = '8'
+  public getField(f: string): any {
+    switch (f) {
+      case 'title': return 'unavailableItemTitle2'
+      case 'DOI': return '42.0/69'
+      case 'extra': return
+      case 'url': return
+    }
+  }
+}
+
+export { regularItem1, regularItem2, collectionItem, itemWithoutDOI, DOIinExtraItem, DOIinUrlItem, captchaItem, unavailableItem }
