@@ -27,23 +27,23 @@ describe('Scihub test', () => {
       // Allows sinon to enable FakeXHR module, since xhr is not available otherwise
       globalThis.XMLHttpRequest = FakeXMLHttpRequest
       server = fakeServer.create({ respondImmediately: true })
-      server.respondWith('GET', 'https://sci-hub.st/10.1037/a0023781', [
+      server.respondWith('GET', 'https://sci-hub.ru/10.1037/a0023781', [
         200, { 'Content-Type': 'text/html+xml' },
         '<html><body><iframe id="pdf" src="http://example.com/regular_item_1.pdf" /></body></html>',
       ])
-      server.respondWith('GET', 'https://sci-hub.st/10.1029/2018JA025877', [
+      server.respondWith('GET', 'https://sci-hub.ru/10.1029/2018JA025877', [
         200, { 'Content-Type': 'application/xml' },
         '<html><body><iframe id="pdf" src="https://example.com/doi_in_extra_item.pdf?param=val#tag" /></body></html>',
       ])
-      server.respondWith('GET', 'https://sci-hub.st/10.1080/00224490902775827', [
+      server.respondWith('GET', 'https://sci-hub.ru/10.1080/00224490902775827', [
         200, { 'Content-Type': 'application/xml' },
         '<html><body><embed id="pdf" src="http://example.com/doi_in_url_item.pdf"></embed></body></html>',
       ])
-      server.respondWith('GET', 'https://sci-hub.st/captcha', [
+      server.respondWith('GET', 'https://sci-hub.ru/captcha', [
         200, { 'Content-Type': 'application/xml' },
         '<html><body>Captcha is required</body></html>',
       ])
-      server.respondWith('GET', 'https://sci-hub.st/42.0/69', [
+      server.respondWith('GET', 'https://sci-hub.ru/42.0/69', [
         200, { 'Content-Type': 'application/xml' },
         '<html><body>Please try to search again using DOI</body></html>',
       ])
