@@ -138,7 +138,9 @@ class Scihub {
     const innerHTML = body?.innerHTML
     // older .tf domain return rich error message
     // newer .st domains return empty page if pdf is not available
-    if (!innerHTML || innerHTML?.trim() === '' || innerHTML?.match(/Please try to search again using DOI/im)) {
+    if (!innerHTML || innerHTML?.trim() === '' ||
+      innerHTML?.match(/Please try to search again using DOI/im) ||
+      innerHTML?.match(/статья не найдена в базе/im)) {
       return true
     }
     return false
