@@ -20,7 +20,6 @@
                   command="cmd_zotero_scihub_update_all" />
     </menupopup>
 
-  <script src="chrome://zotero/content/include.js"/>
   <script src="chrome://zotero-scihub/content/webpack.js"/>
   <script src="chrome://zotero-scihub/content/scihub.js"/>
 </overlay>
