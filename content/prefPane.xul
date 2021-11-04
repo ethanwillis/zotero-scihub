@@ -45,7 +45,6 @@
     </prefwindow>
 
     <!-- Include the main extension logic -->
-  <script src="chrome://zotero/content/include.js"/>
   <script src="chrome://zotero-scihub/content/webpack.js"/>
   <script src="chrome://zotero-scihub/content/scihub.js"/>
 </overlay>
