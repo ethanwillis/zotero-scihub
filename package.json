@@ -1,6 +1,6 @@
 {
   "name": "zotero-scihub",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Download papers and books by DOI from Sci-Hub",
   "scripts": {
     "lint": "eslint . --ext .ts --cache --cache-location .eslintcache/",
@@ -52,6 +52,6 @@
     "source-map-support": "^0.5.19",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5",
-    "zotero-plugin": "^1.0.55"
+    "zotero-plugin": "^1.2.1"
   }
 }
