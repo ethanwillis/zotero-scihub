@@ -119,7 +119,11 @@ class Scihub {
 
     const xhr = await Zotero.HTTP.request('GET', scihubUrl.href, { responseType: 'document' })
     // older .tf domains have iframe element, newer .st domain have embed element
-    const pdfUrl = xhr.responseXML?.querySelector('#pdf')?.getAttribute('src')
+    const rawPdfUrl = xhr.responseXML?.querySelector('#pdf')?.getAttribute('src')
+    let pdfUrl = rawPdfUrl
+    if (!rawPdfUrl?.startsWith('http')) {
+      pdfUrl = `${this.getBaseScihubUrl()}${rawPdfUrl}`
+    }
     const body = xhr.responseXML?.querySelector('body')
 
     if (xhr.status === HttpCodes.DONE && pdfUrl) {
