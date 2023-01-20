@@ -117,7 +117,7 @@ class Scihub {
   private async updateItem(scihubUrl: URL, item: ZoteroItem) {
     ZoteroUtil.showPopup('Fetching PDF', item.getField('title'))
 
-    const xhr = await Zotero.HTTP.request('GET', scihubUrl.href, { responseType: 'document' })
+    const xhr = await Zotero.HTTP.request('GET', scihubUrl.href, { responseType: 'document', headers:{'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1'} })
     // older .tf domains have iframe element, newer .st domain have embed element
     const rawPdfUrl = xhr.responseXML?.querySelector('#pdf')?.getAttribute('src')
     let pdfUrl = rawPdfUrl
