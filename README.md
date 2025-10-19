@@ -1,16 +1,6 @@
 # Note/News:
 I've been away from any open source work for a while. I also have had issues with my Github account for a while. However!, I know a lot of people like this plugin and have posted a lot of ideas/errors in the issues. 
 
-#### I will be spending a good amount of time to update the plugin, instructions, deal with outstanding errors, and begin adding features that have been requested. 
-If you have a specific issue that is important to you please add any kind of "reaction" to the first comment in that issue and/or a comment of your own(if you have something important to add). 
-If I notice that an issue has a lot of activity, then I will try to prioritize that work first. 
-
-As well, if you are a Twitter user. Feel free to [follow me](https://twitter.com/ELWillis10). My private messages are always open if you want to contact me for whatever reason. 
-
-Thanks everyone for all the interest and nice comments over the years :)
-
---Ethan
-
 # Zotero Scihub
 
 This is an add-on for [Zotero](https://www.zotero.org/) and [Juris-M](https://juris-m.github.io/) that enables automatic download of PDFs for items with a DOI.
