@@ -101,14 +101,8 @@ class Scihub {
           ZoteroUtil.showPopup('PDF not available', `Try again later.\n"${item.getField('title')}"`, true)
           continue
         } else {
-          // Break if Captcha is reached, alert user and redirect
-          alert(
-            `Captcha is required or PDF is not ready yet for "${item.getField('title')}".\n\
-            You will be redirected to the scihub page.\n\
-            Restart fetching process manually.\n\
-            Error message: ${error}`)
-          Zotero.launchURL(scihubUrl.href)
-          break
+          ZoteroUtil.showPopup('CAPTCHA required', `"${item.getField('title')}"`, true)
+          continue
         }
       }
     }
