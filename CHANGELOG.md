@@ -5,6 +5,19 @@
 Port of the plugin to the bootstrap plugin architecture (Zotero 7+), checked on
 Zotero 10.0.3 (Firefox ESR 140) with sci-hub.ru in September 2026.
 
+### Build and release maintenance
+
+- Verified a clean `npm ci` build on Node 22, including lint, type checking,
+  all 17 existing tests, and a packaged bootstrap lifecycle smoke check with
+  simulated Zotero APIs (not an interactive Zotero installation).
+- Updated the TypeScript ESLint parser and plugin together to support the
+  locked TypeScript version. Fixed the newly detected unsafe item lookup type
+  and normalized non-Error menu command rejections before logging.
+- Documented reproducible builds, artifact locations, and SSH/tag-based
+  publishing. Releases now include these notes and fail on missing assets.
+- Legacy development dependencies still have npm audit findings and
+  deprecation warnings; they are not included in the XPI.
+
 ### Zotero 10 compatibility
 
 - `bootstrap.js` no longer calls `registerChrome()`: on Firefox ESR 140 the

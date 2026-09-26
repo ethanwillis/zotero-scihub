@@ -138,7 +138,9 @@ class Scihub {
       menuitem.classList.add('menuitem-iconic', Scihub.MENU_ELEMENT_CLASS)
       menuitem.setAttribute('data-l10n-id', l10nId)
       menuitem.setAttribute('image', icon)
-      menuitem.addEventListener('command', () => { command().catch(err => Zotero.logError(err)) })
+      menuitem.addEventListener('command', () => {
+        command().catch((err: unknown) => Zotero.logError(err instanceof Error ? err : String(err)))
+      })
       popup.append(separator, menuitem)
     }
 

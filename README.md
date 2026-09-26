@@ -58,10 +58,54 @@ _Settings > Advanced > Config Editor_
 
 ## Building
 
-0. Pre-requisite is to have [node.js](nodejs.org) installed
-1. Install dependencies `npm install`
-2. Build `npm run build`, the plugin is written to `build/zotero-scihub-<version>.xpi`
-3. To release, push a `v<version>` tag: CI attaches the `.xpi` and `update.json` (used by Zotero for automatic updates) to the GitHub release
+Use **Node.js 22.x** and its bundled npm, matching CI. `.tool-versions` pins
+Node.js for asdf users. Run these commands from the repository root:
+
+```sh
+git clone --branch master git@github.com:ethanwillis/zotero-scihub.git
+cd zotero-scihub
+npm ci
+npm test
+npm run build
+```
+
+`npm ci` installs the exact dependencies in `package-lock.json`; use `npm install`
+only when intentionally updating dependencies and commit the updated lockfile.
+The build runs ESLint and TypeScript checking, bundles for Firefox 115+, and
+replaces `build/` with:
+
+- `build/zotero-scihub-<version>.xpi`: installable plugin (a ZIP archive).
+- `build/addon/`: unpacked plugin.
+- `build/update.json`: Zotero update metadata pointing to the versioned release.
+
+Install the XPI through Zotero's Plugins menu as described above. This build is
+for Zotero 7–10, not Zotero 6. Tests do not replace checking installation and
+operation in Zotero.
+
+The legacy test/development dependencies still produce deprecation warnings and
+`npm audit` findings. They are not shipped in the XPI. Avoid `npm audit fix --force`
+as a build repair: it can introduce incompatible major versions.
+
+### Releasing
+
+1. Ensure `package.json` and `package-lock.json` have the intended version
+   (`npm version <version> --no-git-tag-version` when changing it), and update
+   `CHANGELOG.md`.
+2. Run `npm ci`, `npm test`, and `npm run build`; check the generated XPI in Zotero.
+3. Commit and push the changes to `master`, then push a matching, unused tag:
+   `git tag -a v<version> -m "Release <version>"` and
+   `git push origin v<version>`.
+4. Wait for the **Release** GitHub Actions workflow to succeed. It builds on
+   Ubuntu with Node 22 and publishes the XPI and `update.json`, using the
+   changelog as release notes. Ordinary branch and pull-request builds do not
+   publish releases.
+5. Check that both assets download from the release and that `update.json`
+   points to its XPI. Keep both assets: the manifest uses the latest release's
+   `update.json` for automatic updates.
+
+Pushing via SSH requires a GitHub SSH key with repository write access. Publishing
+is performed by the workflow's `GITHUB_TOKEN` (`contents: write`); a local GitHub
+CLI login or API token is not required.
 
 ## Contributors
 Thank you Samuel Coavoux for the recent updates! https://github.com/scoavoux

@@ -34,6 +34,9 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
+          name: Zotero Scihub ${{ github.ref_name }}
+          body_path: CHANGELOG.md
+          fail_on_unmatched_files: true
           files: |
             build/*.xpi
             build/update.json

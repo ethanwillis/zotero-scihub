@@ -62,7 +62,10 @@ interface IZotero {
 
   Items: {
     get: (ids: number[]) => ZoteroItem[]
-    getAsync: (ids: number | number[]) => Promise<any | any[]>
+    getAsync: {
+      (ids: number[]): Promise<ZoteroItem[]>
+      (id: number): Promise<ZoteroItem>
+    }
     getAll: (libraryID: number, onlyTopLevel?: boolean, includeDeleted?: boolean) => Promise<ZoteroItem[]>
   }
 
