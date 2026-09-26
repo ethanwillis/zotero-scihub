@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Sci-Hub Plugin for Zotero",
+  "version": "__VERSION__",
+  "description": "Download papers and books by DOI from Sci-Hub",
+  "author": "ethanwillis",
+  "homepage_url": "https://github.com/ethanwillis/zotero-scihub",
+  "icons": {
+    "48": "skin/default/sci-hub-logo.svg",
+    "96": "skin/default/sci-hub-logo.svg"
+  },
+  "applications": {
+    "zotero": {
+      "id": "scihub@example.com",
+      "update_url": "https://github.com/ethanwillis/zotero-scihub/releases/latest/download/update.json",
+      "strict_min_version": "7.0",
+      "strict_max_version": "10.0.*"
+    }
+  }
+}

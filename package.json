@@ -1,14 +1,11 @@
 {
   "name": "zotero-scihub",
-  "version": "1.4.4",
+  "version": "2.0.0",
   "description": "Download papers and books by DOI from Sci-Hub",
   "scripts": {
     "lint": "eslint . --ext .ts --cache --cache-location .eslintcache/",
     "prebuild": "npm run lint",
     "build": "tsc --noEmit && node esbuild.js",
-    "postbuild": "zotero-plugin-zipup build zotero-scihub",
-    "release": "zotero-plugin-release",
-    "postversion": "git push --follow-tags",
     "test": "nyc mocha -r ts-node/register 'tests/**/*.ts'",
     "coverage": "nyc -r lcov npm run test"
   },
@@ -24,12 +21,6 @@
     "url": "https://github.com/ethanwillis/zotero-scihub/issues"
   },
   "homepage": "https://github.com/ethanwillis/zotero-scihub",
-  "xpi": {
-    "name": "Sci-Hub Plugin for Zotero",
-    "updateLink": "https://github.com/ethanwillis/zotero-scihub/releases/download/v{version}/zotero-scihub-{version}.xpi",
-    "releaseURL": "https://github.com/ethanwillis/zotero-scihub/releases/download/release/",
-    "iconURL": "chrome://zotero-scihub/skin/sci-hub-logo.svg"
-  },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/chai": "^4.2.21",
@@ -37,8 +28,9 @@
     "@types/node": "^16.4.1",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
+    "adm-zip": "^0.5.18",
     "chai": "^4.3.4",
-    "esbuild": "^0.12.15",
+    "esbuild": "^0.25.12",
     "eslint": "^7.30.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jsdoc": "^35.4.3",
@@ -51,7 +43,6 @@
     "sinon": "^11.1.2",
     "source-map-support": "^0.5.19",
     "ts-node": "^10.1.0",
-    "typescript": "^4.3.5",
-    "zotero-plugin": "^1.2.1"
+    "typescript": "^4.3.5"
   }
 }

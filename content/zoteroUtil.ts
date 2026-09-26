@@ -30,7 +30,7 @@ export abstract class ZoteroUtil {
     const seconds = 1000
     const pw = new Zotero.ProgressWindow()
     if (isError) {
-      pw.changeHeadline('Error', 'chrome://zotero/skin/cross.png', `Sci-Hub: ${title}`)
+      pw.changeHeadline('Error', undefined, `Sci-Hub: ${title}`)
     } else {
       pw.changeHeadline(`Sci-Hub: ${title}`)
     }

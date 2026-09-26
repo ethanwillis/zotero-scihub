@@ -1,25 +1,32 @@
-import type { IZotero, IZoteroPane } from '../typings/zotero'
-declare const ZoteroPane: IZoteroPane
+import type { IZotero, ZoteroItem } from '../typings/zotero'
 declare const Zotero: IZotero
 
 class ItemPane {
-  public async updateSelectedEntity(libraryId: string): Promise<void> {
-    Zotero.debug(`scihub: updating items in entity ${libraryId}`)
-    if (!ZoteroPane.canEdit()) {
-      ZoteroPane.displayCannotEditLibraryMessage()
+  public async updateSelectedEntity(): Promise<void> {
+    const zoteroPane = Zotero.getActiveZoteroPane()
+    if (!zoteroPane) return
+    Zotero.debug('scihub: updating items in selected collections')
+    if (!zoteroPane.canEdit()) {
+      zoteroPane.displayCannotEditLibraryMessage()
       return
     }
 
-    const collection = ZoteroPane.getSelectedCollection(false)
-    if (collection) {
-      const items = collection.getChildItems(false, false)
-      await Zotero.Scihub.updateItems(items)
+    // Zotero 10 allows selecting several collections at once
+    const collections = zoteroPane.getSelectedCollections
+      ? zoteroPane.getSelectedCollections(false)
+      : [zoteroPane.getSelectedCollection(false)]
+    const items: ZoteroItem[] = []
+    for (const collection of collections) {
+      if (collection) items.push(...collection.getChildItems(false, false))
     }
+    await Zotero.Scihub.updateItems(items)
   }
 
   public async updateSelectedItems(): Promise<void> {
+    const zoteroPane = Zotero.getActiveZoteroPane()
+    if (!zoteroPane) return
     Zotero.debug('scihub: updating selected items')
-    const items = ZoteroPane.getSelectedItems()
+    const items = zoteroPane.getSelectedItems()
     await Zotero.Scihub.updateItems(items)
   }
 }

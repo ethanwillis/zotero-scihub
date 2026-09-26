@@ -1,0 +1,9 @@
+zotero-scihub-update-item =
+    .label = Update Scihub PDF
+zotero-scihub-update-collection =
+    .label = Update Collection Scihub PDFs
+zotero-scihub-update-all =
+    .label = Update All Scihub PDFs
+zotero-scihub-pref-automatic-pdf-download =
+    .label = Automatic PDF Download
+zotero-scihub-pref-scihub-url = Scihub URL:

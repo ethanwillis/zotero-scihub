@@ -10,8 +10,6 @@ globalThis.DOMParser = new JSDOM().window.DOMParser
 import { Zotero, progressWindowSpy } from './zotero.mock'
 import { collectionItem, itemWithoutDOI, regularItem1, regularItem2, DOIinExtraItem, DOIinUrlItem, captchaItem, unavailableItem } from './zoteroItem.mock'
 globalThis.Zotero = Zotero
-// Since there is catch-all in the code which raises alerts
-globalThis.alert = m => { throw new Error(m) }
 
 import { Scihub } from '../content/scihub'
 Zotero.Scihub = new Scihub()
@@ -35,17 +33,22 @@ describe('Scihub test', () => {
         200, { 'Content-Type': 'application/xml' },
         '<html><body><iframe id="pdf" src="https://example.com/doi_in_extra_item.pdf?param=val#tag" /></body></html>',
       ])
+      // 2026 sci-hub.ru layout: no #pdf element, citation_pdf_url meta with a protocol-relative url
       server.respondWith('GET', 'https://sci-hub.ru/10.1080/00224490902775827', [
         200, { 'Content-Type': 'application/xml' },
-        '<html><body><embed id="pdf" src="http://example.com/doi_in_url_item.pdf"></embed></body></html>',
+        '<html><head><meta name="citation_pdf_url" content="//example.com/doi_in_url_item.pdf"/></head>' +
+        '<body><object type="application/pdf" data="//example.com/doi_in_url_item.pdf#view=FitH"></object>' +
+        '<altcha-widget></altcha-widget></body></html>',
       ])
+      // sci-hub.ru "are you a robot?" page
       server.respondWith('GET', 'https://sci-hub.ru/captcha', [
         200, { 'Content-Type': 'application/xml' },
-        '<html><body>Captcha is required</body></html>',
+        '<html><body><div class="question"><div class="ask">Вы робот?</div><div class="answer">Нет</div></div>' +
+        '<altcha-widget></altcha-widget></body></html>',
       ])
       server.respondWith('GET', 'https://sci-hub.ru/42.0/69', [
-        200, { 'Content-Type': 'application/xml' },
-        '<html><body>Please try to search again using DOI</body></html>',
+        404, { 'Content-Type': 'application/xml' },
+        '<html><body>статьи по запросу не найдены</body></html>',
       ])
       server.respondWith([
         200, { 'Content-Type': 'application/xml' },
@@ -108,16 +111,16 @@ describe('Scihub test', () => {
     })
 
     it('captcha redirects user and stops execution', async () => {
-      const launchURLSpy = spy(Zotero, 'launchURL')
-      const alertStub = stub(globalThis, 'alert')
+      const openInViewerSpy = spy(Zotero, 'openInViewer')
+      const alertStub = stub(Zotero, 'alert')
 
       // captachItem has weird response
       await Zotero.Scihub.updateItems([captchaItem, regularItem1])
 
-      expect(launchURLSpy.calledOnce).to.be.true
+      expect(openInViewerSpy.calledOnce).to.be.true
       expect(attachmentSpy.notCalled).to.be.true
 
-      launchURLSpy.restore()
+      openInViewerSpy.restore()
       alertStub.restore()
     })
   })
