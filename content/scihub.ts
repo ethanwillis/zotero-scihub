@@ -44,6 +44,8 @@ class ItemObserver implements ZoteroObserver {
 class Scihub {
   // TOOD: only bulk-update items which are missing paper attachement
   private static readonly DEFAULT_SCIHUB_URL = 'https://sci-hub.ru/'
+  // Sci-Hub stopped adding papers in 2022; newer ones are often uploaded to Sci-Net
+  private static readonly DEFAULT_SCINET_URL = 'https://sci-net.xyz/'
   private static readonly DEFAULT_AUTOMATIC_PDF_DOWNLOAD = true
   private static readonly MENU_ELEMENT_CLASS = 'zotero-scihub-menu'
   private static readonly USER_AGENT = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1'
@@ -71,6 +73,14 @@ class Scihub {
     }
 
     return (Zotero.Prefs.get('zoteroscihub.scihub_url') as string).trim()
+  }
+
+  public getBaseScinetUrl(): string {
+    if (Zotero.Prefs.get('zoteroscihub.scinet_url') === undefined) {
+      Zotero.Prefs.set('zoteroscihub.scinet_url', Scihub.DEFAULT_SCINET_URL)
+    }
+
+    return (Zotero.Prefs.get('zoteroscihub.scinet_url') as string).trim()
   }
 
   public isAutomaticPdfDownload(): boolean {
@@ -155,6 +165,12 @@ class Scihub {
       // Skip items which are not processable
       if (!item.isRegularItem()) { continue }
 
+      // Skip items which already have a PDF attached
+      if (this.hasPdfAttachment(item)) {
+        Zotero.debug(`scihub: "${item.getField('title')}" already has a PDF attachment`)
+        continue
+      }
+
       // Skip items without DOI
       const doi = this.getDoi(item)
       if (!doi) {
@@ -168,7 +184,7 @@ class Scihub {
       } catch (error) {
         if (error instanceof PdfNotFoundError) {
           // Do not stop traversing items if PDF is missing for one of them
-          ZoteroUtil.showPopup('PDF not available', `Try again later.\n"${item.getField('title')}"`, true)
+          ZoteroUtil.showPopup('PDF not available', `${error.message}.\n"${item.getField('title')}"`, true)
           continue
         } else if (error instanceof NetworkError) {
           // Nothing will work for the other items either: stop, without opening any page
@@ -195,8 +211,42 @@ class Scihub {
   private async updateItem(doi: string, item: ZoteroItem) {
     ZoteroUtil.showPopup('Fetching PDF', item.getField('title'))
 
-    const pdfUrl = await this.fetchScihubPdfUrl(new URL(doi, this.getBaseScihubUrl()))
+    let pdfUrl: string
+    try {
+      pdfUrl = await this.fetchScihubPdfUrl(new URL(doi, this.getBaseScihubUrl()))
+    } catch (scihubError) {
+      // Captcha and other unexpected errors are handled by the caller
+      if (!(scihubError instanceof PdfNotFoundError) && !(scihubError instanceof NetworkError)) throw scihubError
+      // Fall back to Sci-Net for papers Sci-Hub does not have (or cannot serve right now)
+      const scinetUrl = new URL(doi, this.getBaseScinetUrl())
+      Zotero.debug(`scihub: ${scihubError.message}, trying "${scinetUrl}"`)
+      try {
+        pdfUrl = await this.fetchScinetPdfUrl(scinetUrl)
+      } catch (scinetError) {
+        // Last resort: let Zotero look for an open-access copy (Unpaywall, OpenAlex, publisher page),
+        // which is what Sci-Hub itself suggests for recent papers
+        if (await this.attachOpenAccessPdf(item)) return
+        // Report an unreachable Sci-Hub rather than a missing PDF it could not even look for
+        if (scihubError instanceof NetworkError) throw scihubError
+        // Sci-Hub did answer: a blocked Sci-Net only means this PDF is missing, do not stop the run
+        if (scinetError instanceof NetworkError) {
+          throw new PdfNotFoundError(`Not on Sci-Hub nor in open access, and ${scinetError.host} cannot be reached`)
+        }
+        throw new PdfNotFoundError('Not found on Sci-Hub, Sci-Net nor in open access')
+      }
+    }
+
     await ZoteroUtil.attachRemotePDFToItem(UrlUtil.urlToHttps(pdfUrl), item)
+  }
+
+  private async attachOpenAccessPdf(item: ZoteroItem): Promise<boolean> {
+    Zotero.debug(`scihub: looking for an open-access copy of "${item.getField('title')}"`)
+    try {
+      return !!(await Zotero.Attachments.addAvailableFile(item))
+    } catch (error) {
+      Zotero.debug(`scihub: open-access lookup failed: ${error}`)
+      return false
+    }
   }
 
   private async fetchPage(url: URL): Promise<XMLHttpRequest> {
@@ -244,6 +294,17 @@ class Scihub {
     }
   }
 
+  private async fetchScinetPdfUrl(scinetUrl: URL): Promise<string> {
+    const xhr = await this.fetchPage(scinetUrl)
+    // Sci-Net shows the paper in an iframe; unknown DOIs are redirected to the home page
+    const rawUrl = xhr.responseXML?.querySelector('iframe[src*=".pdf"]')?.getAttribute('src')
+    if (xhr.status === HttpCodes.DONE && rawUrl) {
+      return new URL(rawUrl, xhr.responseURL || scinetUrl.href).href
+    }
+    Zotero.debug(`scihub: PDF is not available on Sci-Net "${scinetUrl}"`)
+    throw new PdfNotFoundError(`Pdf is not available: ${scinetUrl}`)
+  }
+
   private extractScihubPdfUrl(doc: Document | null | undefined, baseUrl: string): string | null {
     if (!doc) return null
     // older .tf domains have an iframe#pdf, .st domains an embed#pdf, and the
@@ -277,6 +338,10 @@ class Scihub {
       return true
     }
     return false
+  }
+
+  private hasPdfAttachment(item: ZoteroItem): boolean {
+    return Zotero.Items.get(item.getAttachments()).some(attachment => attachment.isPDFAttachment())
   }
 
   private getDoi(item: ZoteroItem): string | null {

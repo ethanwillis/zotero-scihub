@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { ZoteroItem } from '../typings/zotero'
 
 const regularItem1: ZoteroItem = new class {
   public isRegularItem() { return true }
+  public getAttachments() { return [] }
+  public isPDFAttachment() { return false }
   public libraryID = 'regularItemLibraryID1'
   public id = '1'
   public getField(f: string): any {
@@ -16,6 +19,8 @@ const regularItem1: ZoteroItem = new class {
 
 const regularItem2: ZoteroItem = new class {
   public isRegularItem() { return true }
+  public getAttachments() { return [] }
+  public isPDFAttachment() { return false }
   public libraryID = 'regularItemLibraryID2'
   public id = '2'
   public getField(f: string): any {
@@ -30,6 +35,8 @@ const regularItem2: ZoteroItem = new class {
 
 const collectionItem: ZoteroItem = new class {
   public isRegularItem() { return false }
+  public getAttachments() { return [] }
+  public isPDFAttachment() { return false }
   public libraryID = 'regularItemLibraryID2'
   public id = '3'
   public getField(f: string): any {
@@ -44,6 +51,8 @@ const collectionItem: ZoteroItem = new class {
 
 const itemWithoutDOI: ZoteroItem = new class {
   public isRegularItem() { return true }
+  public getAttachments() { return [] }
+  public isPDFAttachment() { return false }
   public libraryID = 'regularItemLibraryID2'
   public id = '4'
   public getField(f: string): any {
@@ -59,6 +68,8 @@ const itemWithoutDOI: ZoteroItem = new class {
 
 const DOIinExtraItem: ZoteroItem = new class {
   public isRegularItem() { return true }
+  public getAttachments() { return [] }
+  public isPDFAttachment() { return false }
   public libraryID = 'regularItemLibraryID2'
   public id = '5'
   public getField(f: string): any {
@@ -74,6 +85,8 @@ const DOIinExtraItem: ZoteroItem = new class {
 
 const DOIinUrlItem: ZoteroItem = new class {
   public isRegularItem() { return true }
+  public getAttachments() { return [] }
+  public isPDFAttachment() { return false }
   public libraryID = 'regularItemLibraryID2'
   public id = '6'
   public getField(f: string): any {
@@ -89,6 +102,8 @@ const DOIinUrlItem: ZoteroItem = new class {
 
 const captchaItem: ZoteroItem = new class {
   public isRegularItem() { return true }
+  public getAttachments() { return [] }
+  public isPDFAttachment() { return false }
   public libraryID = 'regularItemLibraryID2'
   public id = '7'
   public getField(f: string): any {
@@ -104,6 +119,8 @@ const captchaItem: ZoteroItem = new class {
 
 const unavailableItem: ZoteroItem = new class {
   public isRegularItem() { return true }
+  public getAttachments() { return [] }
+  public isPDFAttachment() { return false }
   public libraryID = 'unavailableItemLibraryID2'
   public id = '8'
   public getField(f: string): any {
@@ -116,4 +133,29 @@ const unavailableItem: ZoteroItem = new class {
   }
 }
 
-export { regularItem1, regularItem2, collectionItem, itemWithoutDOI, DOIinExtraItem, DOIinUrlItem, captchaItem, unavailableItem }
+const pdfAttachment: ZoteroItem = new class {
+  public isRegularItem() { return false }
+  public getAttachments(): number[] { throw new Error('getAttachments() cannot be called on attachment items') }
+  public isPDFAttachment() { return true }
+  public libraryID = 'regularItemLibraryID1'
+  public id = '100'
+  public getField(_f: string): any { return }
+}
+const attachmentsById: Record<number, ZoteroItem> = { 100: pdfAttachment }
+
+const itemWithPdf: ZoteroItem = new class {
+  public isRegularItem() { return true }
+  public getAttachments() { return [100] }
+  public isPDFAttachment() { return false }
+  public libraryID = 'regularItemLibraryID1'
+  public id = '9'
+  public getField(f: string): any {
+    switch (f) {
+      case 'title': return 'itemWithPdfTitle'
+      case 'DOI': return '10.1037/a0023781'
+      default: return
+    }
+  }
+}
+
+export { itemWithPdf, attachmentsById, regularItem1, regularItem2, collectionItem, itemWithoutDOI, DOIinExtraItem, DOIinUrlItem, captchaItem, unavailableItem }

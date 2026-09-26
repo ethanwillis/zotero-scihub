@@ -23,7 +23,11 @@ click this, a PDF of the file will be downloaded from Scihub and attached to you
 item in Zotero.
 
 For any new papers you add after this plugin is installed, the scihub pdf will be
-automatically downloaded.
+automatically downloaded. Items which already have a PDF attachment are skipped.
+
+Papers published after 2021 are mostly missing from Sci-Hub; when Sci-Hub does not
+have a paper, the plugin looks for it on [Sci-Net](https://sci-net.xyz/), where newer
+papers are uploaded by the community.
 
 Sci-Hub may ask you to prove that you are not a robot. When that happens the plugin
 opens the Sci-Hub page in a Zotero window: answer the question there ("No"/"Нет"),
@@ -38,6 +42,7 @@ Plugin is configured through the dedicated "Zotero Scihub" pane in Zotero's sett
 - _Sci-Hub URL_: the mirror to use, `https://sci-hub.ru/` by default. If your network
   blocks it, try `https://sci-hub.box/` (redirects to a regional mirror) or enable
   DNS-over-HTTPS as described below
+- _Sci-Net URL_: where to look for papers Sci-Hub does not have, `https://sci-net.xyz/` by default
 
 #### DNS-over-HTTPS
 

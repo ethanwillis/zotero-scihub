@@ -27,3 +27,18 @@ Zotero 10.0.3 (Firefox ESR 140) with sci-hub.ru in September 2026.
   so solving it there unblocks the next request (an external browser never could).
 - A host that cannot be reached (DNS block, TLS failure) is reported as such
   instead of as a captcha.
+
+### Fallbacks for papers Sci-Hub does not have (optional additions)
+
+Sci-Hub stopped adding papers in 2022; for a paper it does not have the plugin
+now tries, in order:
+
+1. [Sci-Net](https://sci-net.xyz/), where newer papers are uploaded by the
+   community (URL configurable in the preferences);
+2. Zotero's own open-access lookup (`Zotero.Attachments.addAvailableFile()`:
+   Unpaywall, OpenAlex, publisher page), which is what Sci-Hub itself suggests.
+
+Items which already have a PDF attachment are skipped, so "Update All" and
+re-runs no longer create duplicate attachments. When Sci-Hub answered but the
+Sci-Net host cannot be reached, only that item is reported as unavailable and
+the run continues.

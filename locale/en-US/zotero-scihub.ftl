@@ -6,4 +6,6 @@ zotero-scihub-update-all =
     .label = Update All Scihub PDFs
 zotero-scihub-pref-automatic-pdf-download =
     .label = Automatic PDF Download
-zotero-scihub-pref-scihub-url = Scihub URL:
+zotero-scihub-pref-scihub-url = Sci-Hub URL:
+zotero-scihub-pref-scinet-url = Sci-Net URL (fallback for papers Sci-Hub does not have):
+zotero-scihub-pref-help = If a mirror is blocked on your network, try another one, e.g. https://sci-hub.box/ (redirects to a regional mirror).

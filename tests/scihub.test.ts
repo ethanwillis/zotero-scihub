@@ -8,7 +8,7 @@ import { JSDOM } from 'jsdom'
 globalThis.DOMParser = new JSDOM().window.DOMParser
 
 import { Zotero, progressWindowSpy } from './zotero.mock'
-import { collectionItem, itemWithoutDOI, regularItem1, regularItem2, DOIinExtraItem, DOIinUrlItem, captchaItem, unavailableItem } from './zoteroItem.mock'
+import { collectionItem, itemWithoutDOI, itemWithPdf, regularItem1, regularItem2, DOIinExtraItem, DOIinUrlItem, captchaItem, unavailableItem } from './zoteroItem.mock'
 globalThis.Zotero = Zotero
 
 import { Scihub } from '../content/scihub'
@@ -76,6 +76,27 @@ describe('Scihub test', () => {
       expect(attachmentSpy.notCalled).to.be.true
     })
 
+    it('skips items which already have a PDF attachment', async () => {
+      await Zotero.Scihub.updateItems([itemWithPdf])
+      expect(attachmentSpy.notCalled).to.be.true
+    })
+
+    it('treats the "article not in the database" page as not available and tries Sci-Net', async () => {
+      server.respondWith('GET', 'https://sci-hub.ru/10.1119/1.2805241', [
+        200, { 'Content-Type': 'application/xml' },
+        '<html><body><div class="explanation">Полного текста этой статьи нет в моей базе. Статья относительно новая</div></body></html>',
+      ])
+      server.respondWith('GET', 'https://sci-net.xyz/10.1119/1.2805241', [
+        200, { 'Content-Type': 'application/xml' },
+        '<html><body><div class="pdf"><iframe src="/storage/2024/paper.pdf"></iframe></div></body></html>',
+      ])
+
+      await Zotero.Scihub.updateItems([regularItem2])
+
+      expect(attachmentSpy.calledOnce).to.be.true
+      expect(attachmentSpy.firstCall.args[0].url).to.equal('https://sci-net.xyz/storage/2024/paper.pdf')
+    })
+
     it('attaches PDFs to items it processes', async () => {
       await Zotero.Scihub.updateItems([regularItem1, DOIinExtraItem, DOIinUrlItem])
 
@@ -108,6 +129,33 @@ describe('Scihub test', () => {
 
       expect(progressWindowSpy.calledWith('Error')).to.be.true
       expect(attachmentSpy.calledOnce).to.be.true
+    })
+
+    it('falls back to Sci-Net when Sci-Hub does not have the PDF', async () => {
+      // regularItem2 has no PDF on Sci-Hub; Sci-Net shows it in an iframe
+      server.respondWith('GET', 'https://sci-net.xyz/10.1119/1.2805241', [
+        200, { 'Content-Type': 'application/xml' },
+        '<html><body><div class="pdf"><iframe src="/storage/2024/paper.pdf#view=FitH"></iframe></div></body></html>',
+      ])
+
+      await Zotero.Scihub.updateItems([regularItem2])
+
+      expect(attachmentSpy.calledOnce).to.be.true
+      expect(attachmentSpy.firstCall.args[0].url).to.equal('https://sci-net.xyz/storage/2024/paper.pdf#view=FitH')
+      expect(attachmentSpy.firstCall.args[0].fileBaseName).to.equal('paper.pdf')
+    })
+
+    it('attaches an open-access copy when neither Sci-Hub nor Sci-Net have the PDF', async () => {
+      const openAccessStub = stub(Zotero.Attachments, 'addAvailableFile').resolves(regularItem2)
+
+      // regularItem2 is on neither site
+      await Zotero.Scihub.updateItems([regularItem2])
+
+      expect(openAccessStub.calledOnceWith(regularItem2)).to.be.true
+      expect(attachmentSpy.notCalled).to.be.true
+      expect(progressWindowSpy.calledWith('Error')).to.be.false
+
+      openAccessStub.restore()
     })
 
     it('captcha redirects user and stops execution', async () => {

@@ -1,5 +1,5 @@
 import { IZotero, ZoteroItem, ZoteroObserver, ProgressWindow } from '../typings/zotero'
-import { regularItem1, regularItem2 } from './zoteroItem.mock'
+import { regularItem1, regularItem2, attachmentsById } from './zoteroItem.mock'
 import { spy } from 'sinon'
 
 const progressWindowSpy = spy()
@@ -37,6 +37,10 @@ const Zotero: IZotero = new class {
   }
 
   Items = new class {
+    public get(ids: number[]): ZoteroItem[] {
+      return ids.map(id => attachmentsById[id]).filter(Boolean)
+    }
+
     public async getAsync(ids: number | number[]): Promise<any | any[]> {
       if (Array.isArray(ids)) {
         return Promise.resolve([regularItem1, regularItem2])
@@ -71,6 +75,9 @@ const Zotero: IZotero = new class {
   public Attachments = new class {
     public async importFromURL(_options: Record<string, any>): Promise<ZoteroItem> {
       return Promise.resolve(regularItem1)
+    }
+    public async addAvailableFile(_item: ZoteroItem, _options?: { methods?: string[] }): Promise<ZoteroItem | false> {
+      return Promise.resolve(false)
     }
   }
 

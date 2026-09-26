@@ -20,6 +20,9 @@ interface ZoteroItem {
   libraryID: string
   getField: (field: string, unformatted?: boolean, includeBaseMapped?: boolean) => string
   isRegularItem: () => boolean
+  // ids of the child attachments (regular items only)
+  getAttachments: (includeTrashed?: boolean) => number[]
+  isPDFAttachment: () => boolean
 }
 
 interface ZoteroLibrary {
@@ -58,6 +61,7 @@ interface IZotero {
   }
 
   Items: {
+    get: (ids: number[]) => ZoteroItem[]
     getAsync: (ids: number | number[]) => Promise<any | any[]>
     getAll: (libraryID: number, onlyTopLevel?: boolean, includeDeleted?: boolean) => Promise<ZoteroItem[]>
   }
@@ -74,6 +78,8 @@ interface IZotero {
 
   Attachments: {
     importFromURL: (options: Record<string, any>) => Promise<ZoteroItem>
+    // Zotero's "Find Full Text": resolves an open-access PDF and attaches it, false if none
+    addAvailableFile: (item: ZoteroItem, options?: { methods?: string[] }) => Promise<ZoteroItem | false>
   }
 
   Libraries: {
