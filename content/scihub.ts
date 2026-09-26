@@ -156,6 +156,17 @@ class Scihub {
     win.document.querySelector('[href="zotero-scihub.ftl"]')?.remove()
   }
 
+  private getProviderName(): string {
+    return Zotero.Prefs.get('zoteroscihub.provider') === 'annas-archive' ? "Anna's Archive" : 'Sci-Hub'
+  }
+
+  private getArticleUrl(doi: string): URL {
+    const baseUrl = Zotero.Prefs.get('zoteroscihub.provider') === 'annas-archive'
+      ? 'https://annas-archive.gl/scidb/'
+      : this.getBaseScihubUrl()
+    return new URL(doi, baseUrl)
+  }
+
   public async updateItems(items: ZoteroItem[]): Promise<void> {
     // WARN: Sequentially go through items, parallel will fail due to rate-limiting
     // Cycle needs to be broken if scihub asks for Captcha,
@@ -190,20 +201,19 @@ class Scihub {
           continue
         } else if (error instanceof NetworkError) {
           // Nothing will work for the other items either: stop, without opening any page
-          Zotero.alert(Zotero.getMainWindow(), 'Sci-Hub',
+          Zotero.alert(Zotero.getMainWindow(), this.getProviderName(),
             `Cannot reach ${error.host}.\n\
-            Your network may block it (DNS): try another Sci-Hub mirror in the plugin preferences\n\
-            (e.g. https://sci-hub.box/) or another network.`)
+            Try another PDF source in the plugin preferences or another network.`)
           break
         } else {
           // Break if Captcha is reached, alert user and open the page in Zotero
-          const scihubUrl = new URL(doi, this.getBaseScihubUrl())
-          Zotero.alert(Zotero.getMainWindow(), 'Sci-Hub',
+          const articleUrl = this.getArticleUrl(doi)
+          Zotero.alert(Zotero.getMainWindow(), this.getProviderName(),
             `Captcha is required or PDF is not ready yet for "${item.getField('title')}".\n\
-            The Sci-Hub page will open in Zotero: solve the captcha there,\n\
+            The ${this.getProviderName()} page will open in Zotero: solve the captcha there,\n\
             then restart the fetching process manually.\n\
             Error message: ${error}`)
-          Zotero.openInViewer(scihubUrl.href)
+          Zotero.openInViewer(articleUrl.href)
           break
         }
       }
@@ -215,11 +225,11 @@ class Scihub {
 
     let pdfUrl: string
     try {
-      pdfUrl = await this.fetchScihubPdfUrl(new URL(doi, this.getBaseScihubUrl()))
+      pdfUrl = await this.fetchScihubPdfUrl(this.getArticleUrl(doi))
     } catch (scihubError) {
       // Captcha and other unexpected errors are handled by the caller
       if (!(scihubError instanceof PdfNotFoundError) && !(scihubError instanceof NetworkError)) throw scihubError
-      // Fall back to Sci-Net for papers Sci-Hub does not have (or cannot serve right now)
+      // Fall back to Sci-Net when the selected source has no PDF or cannot be reached
       const scinetUrl = new URL(doi, this.getBaseScinetUrl())
       Zotero.debug(`scihub: ${scihubError.message}, trying "${scinetUrl}"`)
       try {
@@ -228,13 +238,13 @@ class Scihub {
         // Last resort: let Zotero look for an open-access copy (Unpaywall, OpenAlex, publisher page),
         // which is what Sci-Hub itself suggests for recent papers
         if (await this.attachOpenAccessPdf(item)) return
-        // Report an unreachable Sci-Hub rather than a missing PDF it could not even look for
+        // Report an unreachable primary source rather than a missing PDF it could not look for
         if (scihubError instanceof NetworkError) throw scihubError
-        // Sci-Hub did answer: a blocked Sci-Net only means this PDF is missing, do not stop the run
+        // The primary source did answer: a blocked Sci-Net only means this PDF is missing
         if (scinetError instanceof NetworkError) {
-          throw new PdfNotFoundError(`Not on Sci-Hub nor in open access, and ${scinetError.host} cannot be reached`)
+          throw new PdfNotFoundError(`Not on ${this.getProviderName()} nor in open access, and ${scinetError.host} cannot be reached`)
         }
-        throw new PdfNotFoundError('Not found on Sci-Hub, Sci-Net nor in open access')
+        throw new PdfNotFoundError(`Not found on ${this.getProviderName()}, Sci-Net nor in open access`)
       }
     }
 
@@ -281,7 +291,7 @@ class Scihub {
       return pdfUrl
     } else if (xhr.status === HttpCodes.DONE && this.isCaptchaPage(body)) {
       Zotero.debug(`scihub: captcha requested at "${scihubUrl}"`)
-      throw new Error('Sci-Hub asks to verify that you are not a robot')
+      throw new Error(`${this.getProviderName()} asks to verify that you are not a robot`)
     } else if (xhr.status === HttpCodes.NOT_FOUND || xhr.status === HttpCodes.DONE) {
       // Any other 200 page (empty page, "not in the database", "try Sci-Net"...) means no PDF here
       if (!this.isPdfNotAvailable(body)) {

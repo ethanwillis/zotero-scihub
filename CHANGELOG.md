@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Added a PDF source selector for Sci-Hub or Anna's Archive. Sci-Hub remains the
+  default; Anna's Archive uses `https://annas-archive.gl/scidb/{doi}` with the
+  existing Sci-Hub-compatible PDF parser.
+- Provider selection applies to manual and automatic downloads and challenge
+  pages. Sci-Net and open-access fallbacks remain available for both sources.
+- Verified 20 tests and a packaged runtime smoke check using local HTTP fixtures
+  and simulated Zotero APIs; live-provider access and Zotero GUI interaction
+  were not verified.
+
 ## 2.0.0 — Zotero 7 to 10
 
 Port of the plugin to the bootstrap plugin architecture (Zotero 7+), checked on

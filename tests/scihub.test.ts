@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 
 import { expect } from 'chai'
-import { spy, stub, FakeXMLHttpRequest, fakeServer } from 'sinon'
+import { spy, stub, createSandbox, FakeXMLHttpRequest, fakeServer } from 'sinon'
 // DOMParser is requited to support sinon fake xhr document parser
 import { JSDOM } from 'jsdom'
 globalThis.DOMParser = new JSDOM().window.DOMParser
@@ -170,6 +170,84 @@ describe('Scihub test', () => {
 
       openInViewerSpy.restore()
       alertStub.restore()
+    })
+  })
+
+  describe("Anna's Archive selection", () => {
+    let sandbox
+    let originalProvider: string | number | boolean
+
+    beforeEach(() => {
+      originalProvider = Zotero.Prefs.get('zoteroscihub.provider')
+      Zotero.Prefs.set('zoteroscihub.provider', 'annas-archive')
+      sandbox = createSandbox()
+    })
+
+    afterEach(() => {
+      sandbox.restore()
+      Zotero.Prefs.set('zoteroscihub.provider', originalProvider)
+      progressWindowSpy.resetHistory()
+    })
+
+    it('keeps the scidb path, resolves redirected PDF links, and supports switching back', async () => {
+      const request = sandbox.stub(Zotero.HTTP, 'request')
+      request.onFirstCall().resolves({
+        status: 200,
+        responseURL: 'https://annas-archive.gl/redirected/10.1037/a0023781',
+        responseXML: new DOMParser().parseFromString(
+          '<html><body><iframe id="pdf" src="../files/paper.pdf"/></body></html>', 'text/xml'),
+      })
+      request.onSecondCall().resolves({
+        status: 200,
+        responseURL: 'https://sci-hub.ru/10.1037/a0023781',
+        responseXML: new DOMParser().parseFromString(
+          '<html><body><iframe id="pdf" src="/paper.pdf"/></body></html>', 'text/xml'),
+      })
+      const attachment = sandbox.spy(Zotero.Attachments, 'importFromURL')
+
+      await Zotero.Scihub.updateItems([regularItem1])
+      expect(request.firstCall.args[1]).to.equal('https://annas-archive.gl/scidb/10.1037/a0023781')
+      expect(attachment.firstCall.args[0].url).to.equal('https://annas-archive.gl/redirected/files/paper.pdf')
+
+      Zotero.Prefs.set('zoteroscihub.provider', 'scihub')
+      await Zotero.Scihub.updateItems([regularItem1])
+      expect(request.secondCall.args[1]).to.equal('https://sci-hub.ru/10.1037/a0023781')
+      expect(attachment.secondCall.args[0].url).to.equal('https://sci-hub.ru/paper.pdf')
+    })
+
+    it('opens the selected provider challenge page and stops the batch', async () => {
+      const request = sandbox.stub(Zotero.HTTP, 'request').resolves({
+        status: 200,
+        responseXML: new DOMParser().parseFromString(
+          '<html><body><div class="question"><button class="answer">No</button></div></body></html>', 'text/xml'),
+      })
+      const viewer = sandbox.spy(Zotero, 'openInViewer')
+      sandbox.stub(Zotero, 'alert')
+      const attachment = sandbox.spy(Zotero.Attachments, 'importFromURL')
+
+      await Zotero.Scihub.updateItems([regularItem1, regularItem2])
+
+      expect(viewer.calledOnceWith('https://annas-archive.gl/scidb/10.1037/a0023781')).to.be.true
+      expect(request.calledOnce).to.be.true
+      expect(attachment.notCalled).to.be.true
+    })
+
+    it("retains Sci-Net fallback when Anna's Archive has no PDF", async () => {
+      const request = sandbox.stub(Zotero.HTTP, 'request')
+      request.onFirstCall().resolves({ status: 404 })
+      request.onSecondCall().resolves({
+        status: 200,
+        responseURL: 'https://sci-net.xyz/10.1037/a0023781',
+        responseXML: new DOMParser().parseFromString(
+          '<html><body><iframe src="/storage/paper.pdf"/></body></html>', 'text/xml'),
+      })
+      const attachment = sandbox.spy(Zotero.Attachments, 'importFromURL')
+
+      await Zotero.Scihub.updateItems([regularItem1])
+
+      expect(request.secondCall.args[1]).to.equal('https://sci-net.xyz/10.1037/a0023781')
+      expect(attachment.calledOnce).to.be.true
+      expect(attachment.firstCall.args[0].url).to.equal('https://sci-net.xyz/storage/paper.pdf')
     })
   })
 })

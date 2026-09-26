@@ -19,19 +19,19 @@ This is an add-on for [Zotero](https://www.zotero.org/) 7 to 10 that enables aut
 
 Once you have the plugin installed simply, right click any item in your collections.
 There will now be a new context menu option titled "Update Scihub PDF." Once you
-click this, a PDF of the file will be downloaded from Scihub and attached to your
-item in Zotero.
+click this, a PDF will be downloaded from the selected source (Sci-Hub by default,
+or Anna's Archive) and attached to your item in Zotero.
 
-For any new papers you add after this plugin is installed, the scihub pdf will be
+For any new papers you add after this plugin is installed, the PDF will be
 automatically downloaded. Items which already have a PDF attachment are skipped.
 
-Papers published after 2021 are mostly missing from Sci-Hub; when Sci-Hub does not
-have a paper, the plugin looks for it on [Sci-Net](https://sci-net.xyz/), where newer
-papers are uploaded by the community.
+Papers published after 2021 are mostly missing from Sci-Hub. When the selected
+source has no PDF, the plugin looks on [Sci-Net](https://sci-net.xyz/), then tries
+Zotero's open-access lookup.
 
-Sci-Hub may ask you to prove that you are not a robot. When that happens the plugin
-opens the Sci-Hub page in a Zotero window: answer the question there ("No"/"Нет"),
-close the window and run "Update Scihub PDF" again. Solving it in your regular
+The selected source may ask you to prove that you are not a robot. When that
+happens the plugin opens that source's article page in a Zotero window: solve the
+challenge there, close the window and run "Update Scihub PDF" again. Solving it in your regular
 browser would not help, since Zotero does not see your browser's cookies.
 
 #### Configuration
@@ -39,10 +39,15 @@ browser would not help, since Zotero does not see your browser's cookies.
 Plugin is configured through the dedicated "Zotero Scihub" pane in Zotero's settings:
 
 - _Automatic PDF Download_: fetch the PDF of every item added to the library
-- _Sci-Hub URL_: the mirror to use, `https://sci-hub.ru/` by default. If your network
-  blocks it, try `https://sci-hub.box/` (redirects to a regional mirror) or enable
-  DNS-over-HTTPS as described below
-- _Sci-Net URL_: where to look for papers Sci-Hub does not have, `https://sci-net.xyz/` by default
+- _PDF source_: select **Sci-Hub** (default) or **Anna's Archive**. Anna's Archive
+  uses `https://annas-archive.gl/scidb/{doi}`; for example,
+  `https://annas-archive.gl/scidb/10.1037/a0023781`. The selection applies to both
+  manual and automatic downloads, without restarting Zotero.
+- _Sci-Hub URL_: the mirror to use when Sci-Hub is selected, `https://sci-hub.ru/`
+  by default. If your network blocks it, try `https://sci-hub.box/` (redirects to a
+  regional mirror) or enable DNS-over-HTTPS as described below. Switching to
+  Anna's Archive preserves this setting for when you switch back.
+- _Sci-Net URL_: fallback for either selected source, `https://sci-net.xyz/` by default
 
 #### DNS-over-HTTPS
 
