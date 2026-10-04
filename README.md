@@ -1,5 +1,6 @@
 # Note/News:
-I've been away from any open source work for a while. I also have had issues with my Github account for a while. However!, I know a lot of people like this plugin and have posted a lot of ideas/errors in the issues. 
+Big recent update that fixes lots of small issues and the major compat ones for newer version of zotero.
+
 
 # Zotero Scihub
 
