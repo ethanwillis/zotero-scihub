@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.1 — PDF file renaming
+
+- Downloaded PDFs now use Zotero's file renaming settings and parent-item
+  metadata instead of a filename taken from the download URL.
+- Fix duplicate `.pdf.pdf` extensions and respect the user's choice of file
+  types to rename under **Settings → General → File Renaming**.
+- Includes [#110](https://github.com/ethanwillis/zotero-scihub/pull/110).
+
 ## 2.0.0 — Zotero 7 to 10
 
 Port of the plugin to the bootstrap plugin architecture (Zotero 7+), checked on
