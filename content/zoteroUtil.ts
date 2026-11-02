@@ -1,19 +1,17 @@
-import { UrlUtil } from './urlUtil'
 import type { ZoteroItem, IZotero } from '../typings/zotero'
 
 declare const Zotero: IZotero
 
 export abstract class ZoteroUtil {
   public static async attachRemotePDFToItem(pdfUrl: URL, item: ZoteroItem): Promise<void> {
-    const filename = UrlUtil.extractFileNameFromUrl(pdfUrl)
-
     // Download PDF and add as attachment
     const importOptions = {
       libraryID: item.libraryID,
       url: pdfUrl.href,
       parentItemID: item.id,
       title: item.getField('title'),
-      fileBaseName: filename,
+      // Let Zotero name the file using the user's file renaming settings
+      renameIfAllowedType: true,
       contentType: 'application/pdf',
       referrer: '',
       cookieSandbox: null,

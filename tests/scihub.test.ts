@@ -103,15 +103,15 @@ describe('Scihub test', () => {
       expect(attachmentSpy.callCount).to.equals(3)
 
       expect(attachmentSpy.firstCall.args[0].url).to.equal('https://example.com/regular_item_1.pdf')
-      expect(attachmentSpy.firstCall.args[0].fileBaseName).to.equal('regular_item_1.pdf')
+      expect(attachmentSpy.firstCall.args[0].renameIfAllowedType).to.equal(true)
       expect(attachmentSpy.firstCall.args[0].title).to.equal('regularItemTitle1')
 
       expect(attachmentSpy.secondCall.args[0].url).to.equal('https://example.com/doi_in_extra_item.pdf?param=val#tag')
-      expect(attachmentSpy.secondCall.args[0].fileBaseName).to.equal('doi_in_extra_item.pdf')
+      expect(attachmentSpy.secondCall.args[0].renameIfAllowedType).to.equal(true)
       expect(attachmentSpy.secondCall.args[0].title).to.equal('DOIinExtraItemTitle')
 
       expect(attachmentSpy.thirdCall.args[0].url).to.equal('https://example.com/doi_in_url_item.pdf')
-      expect(attachmentSpy.thirdCall.args[0].fileBaseName).to.equal('doi_in_url_item.pdf')
+      expect(attachmentSpy.thirdCall.args[0].renameIfAllowedType).to.equal(true)
       expect(attachmentSpy.thirdCall.args[0].title).to.equal('DOIinUrlItemTitle')
     })
 
@@ -142,7 +142,7 @@ describe('Scihub test', () => {
 
       expect(attachmentSpy.calledOnce).to.be.true
       expect(attachmentSpy.firstCall.args[0].url).to.equal('https://sci-net.xyz/storage/2024/paper.pdf#view=FitH')
-      expect(attachmentSpy.firstCall.args[0].fileBaseName).to.equal('paper.pdf')
+      expect(attachmentSpy.firstCall.args[0].renameIfAllowedType).to.equal(true)
     })
 
     it('attaches an open-access copy when neither Sci-Hub nor Sci-Net have the PDF', async () => {

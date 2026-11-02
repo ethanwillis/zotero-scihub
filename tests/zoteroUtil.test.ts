@@ -24,7 +24,8 @@ describe('ZoteroUtil test', () => {
       await ZoteroUtil.attachRemotePDFToItem(pdfUrl, regularItem1)
 
       expect(attachmentSpy.firstCall.args[0].url).to.equal('https://example.com/filename.pdf')
-      expect(attachmentSpy.firstCall.args[0].fileBaseName).to.equal('filename.pdf')
+      expect(attachmentSpy.firstCall.args[0].renameIfAllowedType).to.equal(true)
+      expect(attachmentSpy.firstCall.args[0].fileBaseName).to.equal(undefined)
       expect(attachmentSpy.firstCall.args[0].title).to.equal('regularItemTitle1')
     })
   })
